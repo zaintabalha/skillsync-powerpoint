@@ -63,6 +63,36 @@
       z-index: 100;
       color: var(--ivory-warm);
       backdrop-filter: blur(10px);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* Fullscreen Hide UI Modifiers */
+    body.is-fullscreen .top-bar,
+    body.is-fullscreen .bottom-nav,
+    body.is-fullscreen .progress-ribbon-track {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+      height: 0;
+      padding: 0;
+      border: none;
+      overflow: hidden;
+    }
+
+    body.is-fullscreen .bottom-nav {
+      transform: translateY(100%);
+    }
+
+    body.is-fullscreen .stage-wrapper {
+      padding: 0;
+      background: #0D1B15;
+    }
+
+    body.is-fullscreen .deck-viewport {
+      max-width: 100vw;
+      max-height: 100vh;
+      border-radius: 0;
+      box-shadow: none;
     }
 
     .brand-pill {
@@ -2046,11 +2076,22 @@
     // Full Screen Toggle optimized for Projectors
     function toggleFullScreen() {
       if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
+        document.documentElement.requestFullscreen().then(() => {
+          document.body.classList.add('is-fullscreen');
+        }).catch(() => {});
       } else {
-        document.exitFullscreen().catch(() => {});
+        document.exitFullscreen().then(() => {
+          document.body.classList.remove('is-fullscreen');
+        }).catch(() => {});
       }
     }
+
+    // Sync fullscreen state if exited via ESC key
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        document.body.classList.remove('is-fullscreen');
+      }
+    });
 
     // Edit Mode Toggle: Make all presentation text editable instantly
     let isEditMode = false;
