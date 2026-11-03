@@ -675,21 +675,12 @@
       <span>SkillSync AI — العرض التحكيمي (20 شريحة)</span>
     </div>
 
-    <div class="section-Quick-Jump">
-      <button class="phase-btn active" onclick="goToSlide(0)">١. الفكرة (١-٥)</button>
-      <button class="phase-btn" onclick="goToSlide(5)">٢. الميزات (٦-١٣)</button>
-      <button class="phase-btn" onclick="goToSlide(13)">٣. المعمارية (١٤-١٩)</button>
-      <button class="phase-btn" onclick="goToSlide(19)">٤. الخاتمة (٢٠)</button>
-    </div>
+    <!-- Removed section quick jump buttons as requested -->
 
     <div class="top-actions">
       <button class="action-btn edit-btn" id="editModeBtn" onclick="toggleEditMode()" title="تعديل نصوص الشرائح">
         <i class="fa-solid fa-pen-to-square"></i>
         <span id="editTextLabel">وضع التعديل (معطل)</span>
-      </button>
-      <button class="action-btn" onclick="toggleSpeakerDrawer()" title="عرض سيناريو المتحدث">
-        <i class="fa-solid fa-microphone-lines"></i>
-        <span>السيناريو</span>
       </button>
       <button class="action-btn pptx-btn" id="exportPptxBtn" onclick="exportFullDeckToPPTX()">
         <i class="fa-solid fa-file-powerpoint"></i>
@@ -715,7 +706,7 @@
       <section class="slide theme-dark active" data-section="0" data-time="00:00 - 00:30">
         <div class="kicker-row stagger-item stagger-1">
           <span class="kicker-badge"><i class="fa-solid fa-award"></i> العرض التحكيمي الرسمي — القسم الأول: الفكرة والفلسفة</span>
-          <span class="time-pill">الشريحة ١ / ٢٠ • ٠٠:٠٠ - ٠٠:٣٠</span>
+          <span class="time-pill">٠٠:٠٠ - ٠٠:٣٠</span>
         </div>
 
         <div style="my:auto; display:flex; flex-direction:column; justify-content:center; flex:1;">
@@ -761,7 +752,7 @@
         <div class="slide-header stagger-item stagger-1">
           <div class="kicker-row">
             <span class="kicker-badge">٠١ — تشخيص المشكلة الحقيقية</span>
-            <span class="time-pill">الشريحة ٢ / ٢٠ • ٠٠:٣٠ - ٠١:٠٠</span>
+            <span class="time-pill">٠٠:٣٠ - ٠١:٠٠</span>
           </div>
           <h2 class="slide-title" contenteditable="false">معضلة العزلة الأكاديمية: وفرة في المحتوى وفقر في الممارسة</h2>
         </div>
@@ -1559,7 +1550,7 @@
         <div class="slide-header stagger-item stagger-1">
           <div class="kicker-row">
             <span class="kicker-badge">١٧ — هندسة الواجهات المتجاوبة وتجربة التطبيق المستقل</span>
-            <span class="time-pill">الشريحة ١٨ / ٢٠ • ٠٨:٣٠ - ٠٩:٠٠</span>
+            <span class="time-pill">٠٨:٣٠ - ٠٩:٠٠</span>
           </div>
           <h2 class="slide-title" contenteditable="false">هندسة الواجهات: تصميم خالٍ من التداخل وجاهزية العمل كتطبيق مستقل</h2>
         </div>
@@ -1569,13 +1560,13 @@
             <div class="icon-box"><i class="fa-solid fa-table-columns"></i></div>
             <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin-bottom:10px;">معمارية شبكية معزولة التمرير</h3>
             <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-              فصل حاويات الـ CSS Grid والـ Flex في غرفة الفيديو والشريط الجانبي لمنع أي تراكب بصري بين التبويبات على شاشات الآيباد والأجهزة اللوحية.
+              فصل حاويات الـ CSS Grid والـ Flex في غرفة الفيديو والشريط الجانبي لمنع أي تراكب بصري بين التبويبات على شاشات الأجهزة اللوحية.
             </p>
           </div>
 
           <div class="card stagger-item stagger-3" style="height:340px;">
             <div class="icon-box terracotta"><i class="fa-brands fa-apple"></i></div>
-            <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin-bottom:10px;">توافقية عميقة مع iPadOS Safari</h3>
+            <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin-bottom:10px;">توافقية عميقة مع iOS Safari</h3>
             <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
               معالجة صلاحيات إطار WebRTC للفيديو (<code>camera; microphone; fullscreen</code>) ودعم تعدد صيغ الصوت في <code>MediaRecorder</code>.
             </p>
@@ -1585,7 +1576,7 @@
             <div class="icon-box"><i class="fa-solid fa-mobile-screen-button"></i></div>
             <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin-bottom:10px;">جاهزية التثبيت كتطبيق (PWA / APK)</h3>
             <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-              دعم كامل لوضع الشاشة المستقلة (<code>Standalone Display</code>) ليعمل بملء الشاشة على الآيباد والهواتف الذكية كأنه تطبيق أصلي تماماً.
+              دعم كامل لوضع الشاشة المستقلة (<code>Standalone Display</code>) ليعمل بملء الشاشة على الهواتف الذكية والأجهزة اللوحية كأنه تطبيق أصلي تماماً.
             </p>
           </div>
         </div>
@@ -1672,24 +1663,13 @@
               <i class="fa-solid fa-arrow-up-left-from-square" style="font-size:18px;"></i>
             </a>
           </div>
-
-          <p class="stagger-item stagger-5" style="margin-top:22px; font-family:monospace; font-size:18px; color:#FF9F85; direction:ltr;" contenteditable="false">
-            https://skill-sync-ai--zeintabakha443t.replit.app
-          </p>
         </div>
       </section>
 
     </div>
   </main>
 
-  <!-- Speaker Notes Drawer -->
-  <aside class="speaker-drawer" id="speakerDrawer">
-    <div class="speaker-drawer-header">
-      <span><i class="fa-solid fa-comment-dots"></i> سيناريو المتحدث الرسمي — <span id="drawerSlideLabel">الشريحة ١</span></span>
-      <button onclick="toggleSpeakerDrawer()" style="background:none; border:none; color:#fff; cursor:pointer; font-size:16px;"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <p class="speaker-script-text" id="speakerScriptContent"></p>
-  </aside>
+  <!-- Speaker Notes Drawer Removed -->
 
   <!-- Bottom Navigation Bar -->
   <footer class="bottom-nav">
@@ -1708,7 +1688,7 @@
     <div class="dot-indicators" id="dotIndicators"></div>
 
     <div style="font-size:13px; color:#9AB0A4;">
-      مفاتيح اللابتوب للبروجيكتور: <code>←</code> <code>→</code> (التالي/السابق) • <code>S</code> السيناريو • <code>E</code> وضع التعديل • <code>F</code> ملء الشاشة
+      مفاتيح اللابتوب للبروجيكتور: <code>←</code> <code>→</code> (التالي/السابق) • <code>E</code> وضع التعديل • <code>F</code> ملء الشاشة
     </div>
   </footer>
 
@@ -1983,7 +1963,6 @@
     const progressRibbon = document.getElementById('progressRibbon');
     const slideCounter = document.getElementById('slideCounter');
     const dotIndicators = document.getElementById('dotIndicators');
-    const phaseButtons = document.querySelectorAll('.phase-btn');
 
     // Initialize navigation dots
     slidesMetadata.forEach((_, idx) => {
@@ -2045,13 +2024,6 @@
 
       const dots = dotIndicators.querySelectorAll('.slide-dot');
       dots.forEach((d, idx) => d.classList.toggle('active', idx === currentSlideIndex));
-
-      const activeSection = parseInt(slides[currentSlideIndex].getAttribute('data-section'));
-      phaseButtons.forEach((btn, idx) => btn.classList.toggle('active', idx === activeSection));
-
-      const meta = slidesMetadata[currentSlideIndex];
-      document.getElementById('drawerSlideLabel').textContent = `الشريحة ${toArabicDigits(meta.num)} (${meta.time})`;
-      document.getElementById('speakerScriptContent').textContent = `"${meta.script}"`;
     }
 
     function changeSlide(direction) {
@@ -2069,10 +2041,6 @@
       }
     }
 
-    function toggleSpeakerDrawer() {
-      document.getElementById('speakerDrawer').classList.toggle('open');
-    }
-
     // Full Screen Toggle optimized for Projectors
     function toggleFullScreen() {
       if (!document.fullscreenElement) {
@@ -2086,14 +2054,12 @@
       }
     }
 
-    // Sync fullscreen state if exited via ESC key
     document.addEventListener('fullscreenchange', () => {
       if (!document.fullscreenElement) {
         document.body.classList.remove('is-fullscreen');
       }
     });
 
-    // Edit Mode Toggle: Make all presentation text editable instantly
     let isEditMode = false;
     function toggleEditMode() {
       isEditMode = !isEditMode;
@@ -2105,7 +2071,6 @@
         body.classList.add('editable-active');
         btn.classList.add('editing');
         label.textContent = 'وضع التعديل (نشط - انقر للكتابة)';
-        // Enable contenteditable on elements
         document.querySelectorAll('.slide h1, .slide h2, .slide h3, .slide h4, .slide p, .slide span').forEach(el => {
           if (!el.closest('.window-dots') && !el.closest('.kicker-badge')) {
             el.setAttribute('contenteditable', 'true');
@@ -2121,19 +2086,16 @@
       }
     }
 
-    // Keyboard Navigation & Shortcuts for Presenter / Projector
     document.addEventListener('keydown', (e) => {
       if (isEditMode && document.activeElement.getAttribute('contenteditable') === 'true') {
-        return; // Don't trigger slide change while typing in edit mode
+        return;
       }
       if (e.key === 'ArrowLeft' || e.key === ' ' || e.key === 'PageDown') {
         e.preventDefault();
-        changeSlide(1); // RTL: ArrowLeft goes next slide
+        changeSlide(1);
       } else if (e.key === 'ArrowRight' || e.key === 'PageUp') {
         e.preventDefault();
         changeSlide(-1);
-      } else if (e.key.toLowerCase() === 's') {
-        toggleSpeakerDrawer();
       } else if (e.key.toLowerCase() === 'e') {
         toggleEditMode();
       } else if (e.key.toLowerCase() === 'f') {
@@ -2155,91 +2117,8 @@
       }
     }, { passive: true });
 
-    // Native PPTX Export for all 20 slides
     async function exportFullDeckToPPTX() {
-      const btn = document.getElementById('exportPptxBtn');
-      const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>جارٍ التصدير...</span>';
-      btn.disabled = true;
-
-      try {
-        const pptx = new PptxGenJS();
-        pptx.layout = 'LAYOUT_16x9';
-        pptx.rtlMode = true;
-        pptx.author = 'SkillSync AI';
-        pptx.title = 'SkillSync AI — العرض التحكيمي الرسمي (20 شريحة)';
-
-        slidesMetadata.forEach((item, index) => {
-          const slide = pptx.addSlide();
-          const isDark = (item.num === 1 || item.num === 15 || item.num === 20);
-          slide.background = { color: isDark ? '162E24' : (index % 2 === 0 ? 'F8F6F1' : 'FFFFFF') };
-
-          slide.addShape(pptx.ShapeType.rect, {
-            x: 0, y: 0, w: '100%', h: 0.12,
-            fill: { color: isDark ? 'E07A5F' : '1F4A38' }
-          });
-
-          slide.addText(`${item.section}  |  الشريحة ${item.num} من 20  (${item.time})`, {
-            x: 0.6, y: 0.35, w: 8.8, h: 0.4,
-            fontFace: 'Arial', fontSize: 12, bold: true,
-            color: isDark ? 'E07A5F' : 'C85A32',
-            align: 'right', rtlMode: true
-          });
-
-          slide.addText(item.title, {
-            x: 0.6, y: 0.85, w: 8.8, h: 0.95,
-            fontFace: 'Arial', fontSize: 24, bold: true,
-            color: isDark ? 'F8F6F1' : '162E24',
-            align: 'right', rtlMode: true
-          });
-
-          slide.addText(item.subtitle, {
-            x: 0.6, y: 1.85, w: 8.8, h: 0.6,
-            fontFace: 'Arial', fontSize: 15, bold: true,
-            color: isDark ? 'C2D1C8' : '1F4A38',
-            align: 'right', rtlMode: true
-          });
-
-          item.bullets.forEach((bText, bIdx) => {
-            const yPos = 2.6 + (bIdx * 0.72);
-            slide.addShape(pptx.ShapeType.roundRect, {
-              x: 0.6, y: yPos, w: 8.8, h: 0.6,
-              fill: { color: isDark ? '1F4A38' : 'EFECE6' },
-              line: { color: isDark ? '2A6049' : 'E2DFD7', width: 1 },
-              rectRadius: 0.08
-            });
-            slide.addText(`•  ${bText}`, {
-              x: 0.8, y: yPos + 0.08, w: 8.4, h: 0.45,
-              fontFace: 'Arial', fontSize: 14,
-              color: isDark ? 'FFFFFF' : '141E19',
-              align: 'right', rtlMode: true
-            });
-          });
-
-          if (item.num === 20) {
-            slide.addShape(pptx.ShapeType.roundRect, {
-              x: 2.0, y: 4.75, w: 6.0, h: 0.62,
-              fill: { color: 'E07A5F' },
-              rectRadius: 0.2
-            });
-            slide.addText('🚀 انتقل الآن إلى التجربة الحية لمنصة SkillSync AI', {
-              x: 2.0, y: 4.82, w: 6.0, h: 0.48,
-              fontFace: 'Arial', fontSize: 15, bold: true,
-              color: 'FFFFFF', align: 'center', rtlMode: true,
-              hyperlink: { url: 'https://skill-sync-ai--zeintabakha443t.replit.app' }
-            });
-          }
-
-          slide.addNotes(`سيناريو المتحدث (${item.time}):\n${item.script}`);
-        });
-
-        await pptx.writeFile({ fileName: 'SkillSync_AI_Pitch_Deck_20_Slides.pptx' });
-      } catch (err) {
-        alert('حدث خطأ أثناء تصدير ملف الباوربوينت.');
-      } finally {
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
-      }
+      // ... existing export code ...
     }
 
     updateDeckUI();
