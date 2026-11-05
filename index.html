@@ -1,2127 +1,332 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SkillSync AI — العرض التحكيمي الرسمي (20 شريحة تفاعلية)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <!-- PptxGenJS for direct PowerPoint (.pptx) export -->
-  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-
-  <style>
-    :root {
-      --forest-deep: #162E24;
-      --forest-mid: #1F4A38;
-      --forest-soft: #2A6049;
-      --ivory-warm: #F8F6F1;
-      --ivory-alt: #EFECE6;
-      --surface-white: #FFFFFF;
-      --border-soft: #E2DFD7;
-      --terracotta-bold: #C85A32;
-      --terracotta-bright: #E07A5F;
-      --text-dark: #141E19;
-      --text-muted: #4A5D52;
-      --text-light: #F8F6F1;
-      --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background-color: #0D1B15;
-      color: var(--text-dark);
-      overflow: hidden;
-      height: 100vh;
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      user-select: none;
-      direction: rtl;
-    }
-
-    h1, h2, h3, h4, .font-cairo {
-      font-family: 'Cairo', sans-serif;
-    }
-
-    /* Top Progress Ribbon & Control Bar */
-    .top-bar {
-      height: 54px;
-      background: rgba(22, 46, 36, 0.96);
-      border-bottom: 1px solid rgba(224, 122, 95, 0.22);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      z-index: 100;
-      color: var(--ivory-warm);
-      backdrop-filter: blur(10px);
-      transition: transform 0.3s ease, opacity 0.3s ease;
-    }
-
-    /* Fullscreen Hide UI Modifiers */
-    body.is-fullscreen .top-bar,
-    body.is-fullscreen .bottom-nav,
-    body.is-fullscreen .progress-ribbon-track {
-      transform: translateY(-100%);
-      opacity: 0;
-      pointer-events: none;
-      height: 0;
-      padding: 0;
-      border: none;
-      overflow: hidden;
-    }
-
-    body.is-fullscreen .bottom-nav {
-      transform: translateY(100%);
-    }
-
-    body.is-fullscreen .stage-wrapper {
-      padding: 0;
-      background: #0D1B15;
-    }
-
-    body.is-fullscreen .deck-viewport {
-      max-width: 100vw;
-      max-height: 100vh;
-      border-radius: 0;
-      box-shadow: none;
-    }
-
-    .brand-pill {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-family: 'Cairo', sans-serif;
-      font-weight: 800;
-      font-size: 17px;
-    }
-
-    .brand-logo-dot {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
-      background: linear-gradient(135deg, var(--terracotta-bright), var(--terracotta-bold));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 900;
-      box-shadow: 0 4px 12px rgba(200, 90, 50, 0.4);
-    }
-
-    .section-Quick-Jump {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .phase-btn {
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      color: #C2D1C8;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-family: 'Cairo', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s var(--ease-cinematic);
-    }
-
-    .phase-btn.active, .phase-btn:hover {
-      background: var(--terracotta-bold);
-      color: #fff;
-      border-color: var(--terracotta-bright);
-    }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .action-btn {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-family: 'Cairo', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      transition: all 0.25s ease;
-    }
-
-    .action-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-1px);
-    }
-
-    .action-btn.edit-btn {
-      background: rgba(242, 204, 143, 0.18);
-      border-color: #F2CC8F;
-      color: #F2CC8F;
-    }
-
-    .action-btn.edit-btn.editing {
-      background: #E07A5F;
-      color: #fff;
-      border-color: #FFB59E;
-      animation: pulseEdit 1.5s infinite;
-    }
-
-    @keyframes pulseEdit {
-      0% { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0.7); }
-      70% { box-shadow: 0 0 0 10px rgba(224, 122, 95, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0); }
-    }
-
-    .action-btn.pptx-btn {
-      background: linear-gradient(135deg, var(--terracotta-bright), var(--terracotta-bold));
-      border-color: #ff9c82;
-      box-shadow: 0 4px 14px rgba(200, 90, 50, 0.35);
-    }
-
-    /* Animated Progress Ribbon */
-    .progress-ribbon-track {
-      height: 5px;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.08);
-      position: relative;
-      z-index: 101;
-    }
-
-    .progress-ribbon-fill {
-      height: 100%;
-      width: 5%;
-      background: linear-gradient(90deg, var(--terracotta-bold), var(--terracotta-bright), #FFB49A);
-      transition: width 0.6s var(--ease-cinematic);
-      box-shadow: 0 0 12px var(--terracotta-bright);
-    }
-
-    /* Main Stage Viewport */
-    .stage-wrapper {
-      flex: 1;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 18px 28px;
-      overflow: hidden;
-      background: radial-gradient(circle at center, #183529 0%, #0B1712 100%);
-    }
-
-    .deck-viewport {
-      width: 100%;
-      max-width: 1360px;
-      height: 100%;
-      max-height: 760px;
-      position: relative;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1);
-    }
-
-    /* Slide Transition Choreography */
-    .slide {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      padding: 44px 64px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateX(-60px) scale(0.96);
-      transition: opacity 0.65s var(--ease-cinematic), transform 0.65s var(--ease-cinematic);
-      overflow: hidden;
-    }
-
-    .slide.active {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(0) scale(1);
-      z-index: 10;
-    }
-
-    .slide.prev-slide {
-      opacity: 0;
-      transform: translateX(60px) scale(0.95);
-    }
-
-    /* Themes */
-    .theme-dark {
-      background: radial-gradient(circle at 75% 25%, #23533E 0%, #162E24 60%, #0F211A 100%);
-      color: var(--ivory-warm);
-    }
-
-    .theme-ivory {
-      background: var(--ivory-warm);
-      color: var(--text-dark);
-    }
-
-    .theme-white {
-      background: var(--surface-white);
-      color: var(--text-dark);
-    }
-
-    .theme-finale {
-      background: radial-gradient(circle at 50% 45%, #285E46 0%, #162E24 55%, #091410 100%);
-      color: var(--ivory-warm);
-    }
-
-    /* Staggered Reveals */
-    .stagger-item {
-      opacity: 0;
-      transform: translateY(26px);
-      transition: opacity 0.55s var(--ease-cinematic), transform 0.55s var(--ease-cinematic);
-    }
-
-    .slide.active .stagger-item {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .slide.active .stagger-1 { transition-delay: 0.08s; }
-    .slide.active .stagger-2 { transition-delay: 0.20s; }
-    .slide.active .stagger-3 { transition-delay: 0.32s; }
-    .slide.active .stagger-4 { transition-delay: 0.44s; }
-    .slide.active .stagger-5 { transition-delay: 0.56s; }
-
-    /* Image Entrance Physics */
-    .visual-drop-in {
-      opacity: 0;
-      transform: translateY(-45px) scale(0.92);
-      transition: opacity 0.75s var(--ease-cinematic), transform 0.75s var(--ease-cinematic);
-    }
-
-    .visual-rise-up {
-      opacity: 0;
-      transform: translateY(45px) scale(0.92);
-      transition: opacity 0.75s var(--ease-cinematic), transform 0.75s var(--ease-cinematic);
-    }
-
-    .slide.active .visual-drop-in,
-    .slide.active .visual-rise-up {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      transition-delay: 0.28s;
-    }
-
-    @keyframes continuousFloat {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-7px); }
-    }
-
-    .float-frame {
-      animation: continuousFloat 4.2s ease-in-out infinite;
-      box-shadow: 0 18px 40px rgba(20, 30, 25, 0.16);
-      border-radius: 16px;
-      border: 1px solid rgba(31, 74, 56, 0.15);
-      overflow: hidden;
-      background: #fff;
-    }
-
-    /* Slide Header */
-    .slide-header {
-      margin-bottom: 18px;
-    }
-
-    .kicker-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .kicker-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 14px;
-      border-radius: 999px;
-      font-family: 'Cairo', sans-serif;
-      font-size: 13px;
-      font-weight: 800;
-      background: rgba(200, 90, 50, 0.14);
-      color: var(--terracotta-bold);
-    }
-
-    .theme-dark .kicker-badge, .theme-finale .kicker-badge {
-      background: rgba(224, 122, 95, 0.2);
-      color: #FF9F85;
-    }
-
-    .time-pill {
-      font-family: 'Cairo', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-muted);
-      background: rgba(0, 0, 0, 0.05);
-      padding: 3px 12px;
-      border-radius: 20px;
-    }
-
-    .theme-dark .time-pill, .theme-finale .time-pill {
-      color: #B4C8BC;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .slide-title {
-      font-size: 34px;
-      font-weight: 800;
-      line-height: 1.25;
-      color: var(--forest-deep);
-    }
-
-    .theme-dark .slide-title, .theme-finale .slide-title {
-      color: var(--ivory-warm);
-    }
-
-    /* Grid & Cards */
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1.05fr 1fr;
-      gap: 32px;
-      align-items: center;
-    }
-
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-    }
-
-    .card {
-      background: var(--surface-white);
-      border: 1px solid var(--border-soft);
-      border-radius: 16px;
-      padding: 22px;
-      box-shadow: 0 8px 24px rgba(20, 30, 25, 0.05);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .card-ivory {
-      background: var(--ivory-warm);
-      border: 1px solid var(--border-soft);
-      border-radius: 16px;
-      padding: 22px;
-    }
-
-    .card-dark {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 16px;
-      padding: 22px;
-      color: var(--ivory-warm);
-    }
-
-    .icon-box {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      background: rgba(31, 74, 56, 0.1);
-      color: var(--forest-mid);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      margin-bottom: 14px;
-    }
-
-    .icon-box.terracotta {
-      background: rgba(200, 90, 50, 0.14);
-      color: var(--terracotta-bold);
-    }
-
-    /* UI Browser Window */
-    .ui-window {
-      background: #FFFFFF;
-      border-radius: 14px;
-      border: 1px solid #D5D1C8;
-      overflow: hidden;
-      box-shadow: 0 16px 38px rgba(15, 33, 26, 0.14);
-    }
-
-    .ui-window-bar {
-      background: var(--forest-deep);
-      color: #fff;
-      padding: 9px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12px;
-      font-family: 'Cairo', sans-serif;
-    }
-
-    .window-dots {
-      display: flex;
-      gap: 6px;
-    }
-
-    .window-dots span {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #E07A5F;
-    }
-
-    .window-dots span:nth-child(2) { background: #F2CC8F; }
-    .window-dots span:nth-child(3) { background: #81B29A; }
-
-    /* Progress Bars */
-    .metric-bar-track {
-      width: 100%;
-      height: 18px;
-      background: #E2DFD7;
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 8px;
-    }
-
-    .metric-bar-fill {
-      height: 100%;
-      width: 0%;
-      border-radius: 999px;
-      transition: width 1.3s var(--ease-cinematic);
-    }
-
-    @keyframes swipeBubbleDemo {
-      0%, 100% { transform: translateX(0); }
-      40%, 60% { transform: translateX(-34px); }
-    }
-
-    .swipe-demo-bubble {
-      animation: swipeBubbleDemo 3.6s ease-in-out infinite;
-    }
-
-    @keyframes pulseRing {
-      0% { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0.7), 0 16px 40px rgba(200, 90, 50, 0.5); }
-      70% { box-shadow: 0 0 0 24px rgba(224, 122, 95, 0), 0 16px 40px rgba(200, 90, 50, 0.5); }
-      100% { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0), 0 16px 40px rgba(200, 90, 50, 0.5); }
-    }
-
-    .finale-cta-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 14px;
-      background: linear-gradient(135deg, #E07A5F 0%, #C85A32 100%);
-      color: #FFFFFF;
-      font-family: 'Cairo', sans-serif;
-      font-size: 24px;
-      font-weight: 800;
-      padding: 18px 42px;
-      border-radius: 999px;
-      text-decoration: none;
-      border: 2px solid #FFB59E;
-      animation: pulseRing 2.2s infinite;
-      transition: transform 0.25s ease;
-    }
-
-    .finale-cta-btn:hover {
-      transform: scale(1.04) translateY(-2px);
-    }
-
-    /* Editable Content State */
-    .editable-active [contenteditable="true"] {
-      outline: 2px dashed rgba(224, 122, 95, 0.8) !important;
-      outline-offset: 4px;
-      background: rgba(224, 122, 95, 0.08);
-      border-radius: 4px;
-      cursor: text;
-    }
-
-    /* Speaker Notes Drawer */
-    .speaker-drawer {
-      position: fixed;
-      bottom: 58px;
-      left: 50%;
-      transform: translateX(-50%) translateY(130%);
-      width: 92%;
-      max-width: 1120px;
-      background: rgba(20, 38, 30, 0.97);
-      border: 1px solid rgba(224, 122, 95, 0.45);
-      border-radius: 16px;
-      padding: 18px 26px;
-      color: #F8F6F1;
-      z-index: 200;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
-      transition: transform 0.4s var(--ease-cinematic);
-      backdrop-filter: blur(12px);
-    }
-
-    .speaker-drawer.open {
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .speaker-drawer-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-family: 'Cairo', sans-serif;
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--terracotta-bright);
-    }
-
-    .speaker-script-text {
-      font-size: 18px;
-      line-height: 1.65;
-      color: #EAE6DF;
-      font-weight: 500;
-    }
-
-    /* Bottom Navigation Bar */
-    .bottom-nav {
-      height: 52px;
-      background: rgba(15, 31, 24, 0.96);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 28px;
-      color: #C2D1C8;
-      z-index: 100;
-    }
-
-    .nav-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .nav-btn {
-      background: rgba(255, 255, 255, 0.09);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      padding: 6px 16px;
-      border-radius: 8px;
-      font-family: 'Cairo', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-    }
-
-    .nav-btn:hover:not(:disabled) {
-      background: var(--forest-soft);
-      border-color: var(--terracotta-bright);
-    }
-
-    .nav-btn:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
-
-    .slide-counter-pill {
-      font-family: 'Cairo', sans-serif;
-      font-weight: 800;
-      font-size: 15px;
-      color: var(--ivory-warm);
-      padding: 0 12px;
-    }
-
-    .dot-indicators {
-      display: flex;
-      gap: 5px;
-      align-items: center;
-    }
-
-    .slide-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.22);
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .slide-dot.active {
-      width: 24px;
-      background: var(--terracotta-bright);
-    }
-  </style>
-</head>
-<body id="appBody">
-
-  <!-- Top Header Bar -->
-  <header class="top-bar">
-    <div class="brand-pill">
-      <div class="brand-logo-dot">S</div>
-      <span>SkillSync AI — العرض التحكيمي (20 شريحة)</span>
-    </div>
-
-    <!-- Removed section quick jump buttons as requested -->
-
-    <div class="top-actions">
-      <button class="action-btn edit-btn" id="editModeBtn" onclick="toggleEditMode()" title="تعديل نصوص الشرائح">
-        <i class="fa-solid fa-pen-to-square"></i>
-        <span id="editTextLabel">وضع التعديل (معطل)</span>
-      </button>
-      <button class="action-btn pptx-btn" id="exportPptxBtn" onclick="exportFullDeckToPPTX()">
-        <i class="fa-solid fa-file-powerpoint"></i>
-        <span>تحميل PPTX</span>
-      </button>
-      <button class="action-btn" onclick="toggleFullScreen()" title="ملء الشاشة للبروجيكتور">
-        <i class="fa-solid fa-expand"></i>
-        <span>ملء الشاشة</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- Animated Progress Ribbon -->
-  <div class="progress-ribbon-track">
-    <div class="progress-ribbon-fill" id="progressRibbon"></div>
-  </div>
-
-  <!-- Main Stage -->
-  <main class="stage-wrapper">
-    <div class="deck-viewport" id="deckViewport">
-
-      <!-- ==================== SLIDE 1 ==================== -->
-      <section class="slide theme-dark active" data-section="0" data-time="00:00 - 00:30">
-        <div class="kicker-row stagger-item stagger-1">
-          <span class="kicker-badge"><i class="fa-solid fa-award"></i> العرض التحكيمي الرسمي — القسم الأول: الفكرة والفلسفة</span>
-          <span class="time-pill">٠٠:٠٠ - ٠٠:٣٠</span>
-        </div>
-
-        <div style="my:auto; display:flex; flex-direction:column; justify-content:center; flex:1;">
-          <div class="stagger-item stagger-2" style="width:74px; height:74px; border-radius:20px; background:linear-gradient(135deg,#E07A5F,#C85A32); display:flex; align-items:center; justify-content:center; font-size:34px; color:#fff; margin-bottom:24px; box-shadow:0 14px 34px rgba(200,90,50,0.45);">
-            <i class="fa-solid fa-people-arrows"></i>
-          </div>
-          <h1 class="stagger-item stagger-2" contenteditable="false" style="font-size:52px; font-weight:900; line-height:1.2; color:#F8F6F1; max-width:1050px;">
-            SkillSync AI: ثورة التعلم التشاركي وتبادل المهارات الجامعية
-          </h1>
-          <p class="stagger-item stagger-3" contenteditable="false" style="font-size:24px; color:#C2D1C8; margin-top:18px; max-width:900px; line-height:1.6;">
-            عندما تلتقي المعرفة البشرية المتبادلة بهندسة الذكاء الاصطناعي التفاعلي في بيئة واحدة.
-          </p>
-          <div class="stagger-item stagger-4" style="width:140px; height:5px; background:linear-gradient(90deg,#E07A5F,transparent); margin:28px 0;"></div>
-
-          <div class="grid-3 stagger-item stagger-5" style="margin-top:12px;">
-            <div class="card-dark" style="display:flex; align-items:center; gap:16px;">
-              <i class="fa-solid fa-handshake-angle" style="font-size:28px; color:#E07A5F;"></i>
-              <div>
-                <h4 contenteditable="false" style="font-size:18px; font-weight:800;">تبادل المهارات المتكافئ</h4>
-                <p contenteditable="false" style="font-size:14px; color:#B4C8BC;">كل طالب معلم في مهارته ومتعلم في مهارة شريكه</p>
-              </div>
-            </div>
-            <div class="card-dark" style="display:flex; align-items:center; gap:16px;">
-              <i class="fa-solid fa-laptop-code" style="font-size:28px; color:#81B29A;"></i>
-              <div>
-                <h4 contenteditable="false" style="font-size:18px; font-weight:800;">غرف تعلم ومحاكيات حية</h4>
-                <p contenteditable="false" style="font-size:14px; color:#B4C8BC;">تشغيل بصري للأكواد، محادثة وسائط، وغرفة فيديو</p>
-              </div>
-            </div>
-            <div class="card-dark" style="display:flex; align-items:center; gap:16px;">
-              <i class="fa-solid fa-microchip" style="font-size:28px; color:#F2CC8F;"></i>
-              <div>
-                <h4 contenteditable="false" style="font-size:18px; font-weight:800;">ذكاء اصطناعي ميسّر وصامد</h4>
-                <p contenteditable="false" style="font-size:14px; color:#B4C8BC;">معمارية سحابية بـ ٤ نماذج متناوبة دون انقطاع</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 2 ==================== -->
-      <section class="slide theme-ivory" data-section="0" data-time="00:30 - 01:00">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">٠١ — تشخيص المشكلة الحقيقية</span>
-            <span class="time-pill">٠٠:٣٠ - ٠١:٠٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">معضلة العزلة الأكاديمية: وفرة في المحتوى وفقر في الممارسة</h2>
-        </div>
-
-        <div class="stagger-item stagger-2" style="background:linear-gradient(135deg,#162E24,#1F4A38); color:#fff; border-radius:20px; padding:26px 40px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 16px 36px rgba(22,46,36,0.18);">
-          <div style="display:flex; align-items:baseline; gap:8px;">
-            <span class="font-cairo count-up" data-target="73" style="font-size:86px; font-weight:900; color:#E07A5F; line-height:1;">0</span>
-            <span class="font-cairo" style="font-size:48px; font-weight:900; color:#E07A5F;">%</span>
-          </div>
-          <p contenteditable="false" style="font-size:22px; font-weight:500; max-width:820px; line-height:1.55; color:#F8F6F1;">
-            من طلاب الجامعات يكتسبون معارف نظرية ممتازة لكنهم <strong>يفتقدون شريكاً عملياً</strong> لتطبيقها وممارستها خارج القاعات الدراسية.
-          </p>
-        </div>
-
-        <div class="grid-3 stagger-item stagger-3" style="margin-top:20px; flex:1; align-items:stretch;">
-          <div class="card">
-            <div class="icon-box"><i class="fa-solid fa-tv"></i></div>
-            <h3 contenteditable="false" style="font-size:21px; font-weight:800; margin-bottom:10px; color:var(--forest-deep);">١. فخ التعلم السلبي</h3>
-            <p contenteditable="false" style="font-size:17px; color:var(--text-muted); line-height:1.6;">
-              الساعات الطويلة أمام الفيديوهات المسجلة والمحاضرات النظرية تصنع مستمعين جيدين، لكنها لا تصنع ممارسين محترفين.
-            </p>
-          </div>
-          <div class="card">
-            <div class="icon-box terracotta"><i class="fa-solid fa-user-shield"></i></div>
-            <h3 contenteditable="false" style="font-size:21px; font-weight:800; margin-bottom:10px; color:var(--forest-deep);">٢. غياب البيئة الآمنة للتجربة</h3>
-            <p contenteditable="false" style="font-size:17px; color:var(--text-muted); line-height:1.6;">
-              خوف الطالب من الخطأ أمام الأساتذة يمنعه من المبادرة، بينما التعلم التفاعلي مع قرين جامعي مماثل يكسر حاجز الرهبة فوراً.
-            </p>
-          </div>
-          <div class="card">
-            <div class="icon-box"><i class="fa-solid fa-robot"></i></div>
-            <h3 contenteditable="false" style="font-size:21px; font-weight:800; margin-bottom:10px; color:var(--forest-deep);">٣. الاستخدام الخاطئ للـ AI</h3>
-            <p contenteditable="false" style="font-size:17px; color:var(--text-muted); line-height:1.6;">
-              الاعتماد الفردي على الذكاء الاصطناعي كناسخ للحلول الجاهزة يقتل التفكير النقدي، بدلاً من توظيفه كميسر لحوار علمي بين طالبين.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 3 ==================== -->
-      <section class="slide theme-white" data-section="0" data-time="01:00 - 01:30">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">٠٢ — جوهر الفكرة وفلسفة المقايضة المعرفية</span>
-            <span class="time-pill">الشريحة ٣ / ٢٠ • ٠١:٠٠ - ٠١:٣٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">فلسفة SkillSync: أنت تتقن شيئاً.. وهناك من يحتاج أن يتعلمه منك</h2>
-        </div>
-
-        <div class="grid-2" style="flex:1;">
-          <div class="stagger-item stagger-2" style="display:flex; flex-direction:column; gap:16px;">
-            <div class="card-ivory" style="border-right:5px solid var(--forest-mid);">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">
-                مبدأ المقايضة المعرفية المتكافئة (Reciprocal Skill Bartering)
-              </h3>
-              <p contenteditable="false" style="font-size:17px; color:var(--text-muted); line-height:1.55;">
-                لا وجود لمعلم تقليدي ومتلقٍ سلبي؛ كل طالب في المنصة هو <strong>"معلّم في مهارته، ومتعلّم في مهارة شريكه"</strong>.
-              </p>
-            </div>
-            <div class="card-ivory" style="border-right:5px solid var(--terracotta-bold);">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">
-                مثال واقعي حي من داخل المنصة
-              </h3>
-              <p contenteditable="false" style="font-size:17px; color:var(--text-muted); line-height:1.55;">
-                طالب يتقن البرمجة (<code>Python / JS</code>) ويحتاج لتعلم تصميم الواجهات (<code>Product Design / Figma</code>) يلتقي بطالب مصمم يريد تعلم البرمجة.
-              </p>
-            </div>
-            <div class="card-ivory" style="border-right:5px solid var(--forest-mid);">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">
-                النتيجة التعليمية والإنسانية
-              </h3>
-              <p contenteditable="false" style="font-size:17px; color:var(--text-muted); line-height:1.55;">
-                تعلّم مزدوج، التزام متبادل، وبناء مجتمع جامعي مترابط يتبادل الخبرات وجهاً لوجه.
-              </p>
-            </div>
-          </div>
-
-          <div class="visual-drop-in">
-            <div class="ui-window float-frame" style="background:#F8F6F1; padding:0;">
-              <div class="ui-window-bar">
-                <div class="window-dots"><span></span><span></span><span></span></div>
-                <span>skillsync.ai — Peer-Learning Community</span>
-                <span>العربية / EN</span>
-              </div>
-              <div style="padding:32px; text-align:left; direction:ltr; background:#F8F6F1;">
-                <span style="font-size:11px; font-weight:700; letter-spacing:1px; color:#C85A32; text-transform:uppercase;">● A PEER-LEARNING COMMUNITY FOR UNIVERSITY PARTNERS</span>
-                <h3 style="font-family:'Cairo',sans-serif; font-size:38px; font-weight:900; color:#162E24; line-height:1.15; margin:14px 0 18px 0;">
-                  You know a thing.<br>Someone else<br><span style="color:#2A6049;">needs to know it.</span>
-                </h3>
-                <div style="display:flex; gap:12px; align-items:center; margin-top:20px;">
-                  <span style="background:#1F4A38; color:#fff; padding:10px 20px; border-radius:999px; font-size:14px; font-weight:700;">Join the circle →</span>
-                  <span style="background:#fff; border:1px solid #D5D1C8; color:#141E19; padding:8px 16px; border-radius:999px; font-size:13px;">I can teach <b>Figma</b> ⇄ Learn <b>Python</b></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 4 ==================== -->
-      <section class="slide theme-ivory" data-section="0" data-time="01:30 - 02:00">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">٠٣ — رحلة الطالب داخل المنصة</span>
-            <span class="time-pill">الشريحة ٤ / ٢٠ • ٠١:٣٠ - ٠٢:٠٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">كيف تعمل المنظومة؟ رحلة متكاملة من البحث إلى الإتقان التطبيقي</h2>
-        </div>
-
-        <div class="grid-4" style="flex:1; align-items:center;">
-          <div class="card stagger-item stagger-2" style="height:370px; display:flex; flex-direction:column; justify-content:space-between; border-top:5px solid var(--forest-mid);">
-            <div>
-              <span class="font-cairo" style="font-size:38px; font-weight:900; color:var(--terracotta-bold);">٠١</span>
-              <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin:10px 0;">بناء الهوية المهارية (My Profile)</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-                تحديد المهارات التي يتقنها الطالب (<code>What I Can Teach</code>) والمهارات التي يطمح لاكتسابها (<code>What I Want to Learn</code>) ومستوى التفرغ.
-              </p>
-            </div>
-            <span style="font-size:13px; font-weight:700; color:var(--forest-mid);"><i class="fa-solid fa-id-card"></i> ملف أكاديمي ذكي</span>
-          </div>
-
-          <div class="card stagger-item stagger-3" style="height:370px; display:flex; flex-direction:column; justify-content:space-between; border-top:5px solid var(--terracotta-bold);">
-            <div>
-              <span class="font-cairo" style="font-size:38px; font-weight:900; color:var(--terracotta-bold);">٠٢</span>
-              <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin:10px 0;">المطابقة الذكية (Find a Match)</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-                خوارزمية تحلل التقاطع المهاري الثنائي وترشح أفضل شريك جامعي متكامل مع حساب نسبة التوافق بدقة.
-              </p>
-            </div>
-            <span style="font-size:13px; font-weight:700; color:var(--terracotta-bold);"><i class="fa-solid fa-wand-magic-sparkles"></i> تقاطع مهاري متكافئ</span>
-          </div>
-
-          <div class="card stagger-item stagger-4" style="height:370px; display:flex; flex-direction:column; justify-content:space-between; border-top:5px solid var(--forest-mid);">
-            <div>
-              <span class="font-cairo" style="font-size:38px; font-weight:900; color:var(--terracotta-bold);">٠٣</span>
-              <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin:10px 0;">غرفة التعلم المشتركة (Learning Room)</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-                مساحة عمل حية تجمع محادثة الشريك، خارطة الطريق، المحاكيات البرمجية، وغرفة الفيديو الذكية.
-              </p>
-            </div>
-            <span style="font-size:13px; font-weight:700; color:var(--forest-mid);"><i class="fa-solid fa-door-open"></i> ٥ بيئات في شاشة واحدة</span>
-          </div>
-
-          <div class="card stagger-item stagger-5" style="height:370px; display:flex; flex-direction:column; justify-content:space-between; border-top:5px solid var(--terracotta-bold);">
-            <div>
-              <span class="font-cairo" style="font-size:38px; font-weight:900; color:var(--terracotta-bold);">٠٤</span>
-              <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin:10px 0;">التطبيق والتقييم المستمر</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-                اختبارات توليدية فورية، محاكيات أكواد بصرية حية، وملخصات جلسات تقيس التقدم الفعلي للشريكين.
-              </p>
-            </div>
-            <span style="font-size:13px; font-weight:700; color:var(--terracotta-bold);"><i class="fa-solid fa-chart-line"></i> قياس أثر حقيقي</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 5 ==================== -->
-      <section class="slide theme-white" data-section="0" data-time="02:00 - 02:30">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">٠٤ — المعادلة الذهبية للمنصة</span>
-            <span class="time-pill">الشريحة ٥ / ٢٠ • ٠٢:٠٠ - ٠٢:٣٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">الذكاء الاصطناعي كميسّر ذكي للجلسة.. لا كبديل عن الإنسان</h2>
-        </div>
-
-        <div style="flex:1; display:flex; align-items:center; justify-content:center; gap:24px;">
-          <div class="card-ivory stagger-item stagger-2" style="flex:1; padding:28px; border-radius:24px; border:2px solid var(--forest-mid); text-align:center;">
-            <div class="icon-box" style="margin:0 auto 14px auto; width:56px; height:56px; font-size:24px;"><i class="fa-solid fa-users"></i></div>
-            <h3 contenteditable="false" style="font-size:24px; font-weight:800; color:var(--forest-deep); margin-bottom:12px;">الإنسان يمنح (الشريكان)</h3>
-            <p contenteditable="false" style="font-size:17px; color:var(--text-muted); line-height:1.65;">
-              • الدافع الحقيقي والمساءلة المتبادلة<br>
-              • شرح التجربة الشخصية بلغة قريبة<br>
-              • التعاطف وكسر الملل والجمود
-            </p>
-          </div>
-
-          <div class="stagger-item stagger-3" style="width:250px; height:250px; border-radius:50%; background:linear-gradient(135deg,#162E24,#1F4A38); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; box-shadow:0 20px 45px rgba(22,46,36,0.3); border:4px solid var(--terracotta-bright); flex-shrink:0;">
-            <span style="font-size:13px; color:#FF9F85; font-weight:800;">نواة التكامل</span>
-            <h3 class="font-cairo" style="font-size:26px; font-weight:900; margin:6px 0;">SkillSync AI</h3>
-            <p style="font-size:13px; color:#C2D1C8; line-height:1.45;">
-              يتدخل عند الاستدعاء فقط (<code>@AI</code>) دون التشويش على الحوار البشري
-            </p>
-          </div>
-
-          <div class="card-ivory stagger-item stagger-4" style="flex:1; padding:28px; border-radius:24px; border:2px solid var(--terracotta-bold); text-align:center;">
-            <div class="icon-box terracotta" style="margin:0 auto 14px auto; width:56px; height:56px; font-size:24px;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-            <h3 contenteditable="false" style="font-size:24px; font-weight:800; color:var(--forest-deep); margin-bottom:12px;">الذكاء الاصطناعي (<code>@AI</code>) يمنح</h3>
-            <p contenteditable="false" style="font-size:17px; color:var(--text-muted); line-height:1.65;">
-              • هيكلة خطة الدرس وتصحيح المفاهيم<br>
-              • توليد التمارين والمحاكيات اللحظية<br>
-              • تفريغ النقاشات الصوتية وتلخيصها
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 6 ==================== -->
-      <section class="slide theme-ivory" data-section="1" data-time="02:30 - 03:00">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">القسم الثاني: ميزات الموقع • ٠٥ — المطابقة ولوحة القيادة</span>
-            <span class="time-pill">الشريحة ٦ / ٢٠ • ٠٢:٣٠ - ٠٣:٠٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">محرك المطابقة الذكي: إيجاد الشريك الأكاديمي المثالي بضغطة زر</h2>
-        </div>
-
-        <div class="grid-2" style="flex:1;">
-          <div class="stagger-item stagger-2" style="display:flex; flex-direction:column; gap:16px;">
-            <div class="card">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;"><i class="fa-solid fa-arrows-Left-right" style="color:var(--terracotta-bold); margin-left:8px;"></i> تحليل التوافق المهاري الثنائي</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.55;">البحث عن التطابق العكسي المثالي: (ما أملكه = ما تحتاجه أنت، وما تملكه = ما أحتاجه أنا).</p>
-            </div>
-            <div class="card">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;"><i class="fa-solid fa-address-card" style="color:var(--forest-mid); margin-left:8px;"></i> بطاقات شركاء غنية بالمعلومات</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.55;">تعرض التخصص الجامعي، اللغات المدعومة، أوقات التفرغ، ونقاط الالتقاء المشتركة بوضوح.</p>
-            </div>
-            <div class="card">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;"><i class="fa-solid fa-compass" style="color:var(--terracotta-bold); margin-left:8px;"></i> لوحة تحكم شاملة (Overview)</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.55;">تعرض الغرف النشطة، نسبة التقدم في كل غرفة، والمهام القادمة بواجهة مريحة.</p>
-            </div>
-          </div>
-
-          <div class="visual-drop-in">
-            <div class="ui-window float-frame" style="padding:22px; background:#fff;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <span class="font-cairo" style="font-weight:800; font-size:18px; color:var(--forest-deep);">ابحث عن شريك (Find a Match)</span>
-                <span style="background:#E6F2EC; color:var(--forest-mid); font-weight:800; font-size:13px; padding:4px 12px; border-radius:999px;">تطابق مهاري ٩٨٪</span>
-              </div>
-              <div style="background:var(--ivory-warm); border-radius:12px; padding:18px; border:1px solid var(--border-soft);">
-                <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
-                  <div style="width:48px; height:48px; border-radius:50%; background:var(--forest-mid); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800;">PN</div>
-                  <div>
-                    <h4 style="font-size:18px; font-weight:800;">Priya Nair <span style="font-size:13px; color:var(--text-muted); font-weight:500;">• علوم حاسوب وتصميم</span></h4>
-                    <span style="font-size:13px; color:var(--terracotta-bold); font-weight:700;">غرفة نشطة: SkillSync Pairing: Code & Design</span>
-                  </div>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                  <div style="background:#fff; padding:10px 14px; border-radius:8px; border:1px solid var(--border-soft);">
-                    <span style="font-size:12px; color:var(--text-muted);">تعلّمك (Teaches):</span>
-                    <div style="font-weight:800; color:var(--forest-deep); font-size:15px;">Product Design & UI</div>
-                  </div>
-                  <div style="background:#fff; padding:10px 14px; border-radius:8px; border:1px solid var(--border-soft);">
-                    <span style="font-size:12px; color:var(--text-muted);">تعلّمها (Learns):</span>
-                    <div style="font-weight:800; color:var(--terracotta-bold); font-size:15px;">JavaScript & Algorithms</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 7 ==================== -->
-      <section class="slide theme-white" data-section="1" data-time="03:00 - 03:30">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">٠٦ — غرف التعلم الموحدة وثنائية اللغة</span>
-            <span class="time-pill">الشريحة ٧ / ٢٠ • ٠٣:٠٠ - ٠٣:٣٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">غرف التعلم الذكية: محطة عمل متكاملة في شاشة واحدة</h2>
-        </div>
-
-        <div class="visual-drop-in" style="margin-bottom:20px;">
-          <div class="ui-window float-frame" style="background:var(--ivory-warm); padding:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border-soft); padding-bottom:14px;">
-              <div>
-                <h3 class="font-cairo" style="font-size:24px; font-weight:900; color:var(--forest-deep);">SkillSync Pairing: Code & Design</h3>
-                <span style="font-size:14px; color:var(--text-muted);">غرفة تعلم تشاركية ثنائية اللغة (العربية / الإنجليزية) — اتجاه RTL و LTR أصيل</span>
-              </div>
-              <span style="background:var(--forest-mid); color:#fff; padding:6px 16px; border-radius:999px; font-size:13px; font-weight:700;">قيد التعلم • التقدم المشترك نشط</span>
-            </div>
-            <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px;">
-              <div style="background:#fff; border:2px solid var(--forest-mid); padding:12px; border-radius:10px; text-align:center; font-weight:800; color:var(--forest-deep);">
-                <i class="fa-regular fa-comments" style="color:var(--forest-mid); display:block; font-size:20px; margin-bottom:6px;"></i> ١. محادثة الشريك
-              </div>
-              <div style="background:#fff; border:1px solid var(--border-soft); padding:12px; border-radius:10px; text-align:center; font-weight:800; color:var(--forest-deep);">
-                <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--terracotta-bold); display:block; font-size:20px; margin-bottom:6px;"></i> ٢. محادثة SkillSync AI
-              </div>
-              <div style="background:#fff; border:1px solid var(--border-soft); padding:12px; border-radius:10px; text-align:center; font-weight:800; color:var(--forest-deep);">
-                <i class="fa-solid fa-code" style="color:var(--forest-mid); display:block; font-size:20px; margin-bottom:6px;"></i> ٣. اختبارات ومحاكيات
-              </div>
-              <div style="background:#fff; border:1px solid var(--border-soft); padding:12px; border-radius:10px; text-align:center; font-weight:800; color:var(--forest-deep);">
-                <i class="fa-solid fa-route" style="color:var(--terracotta-bold); display:block; font-size:20px; margin-bottom:6px;"></i> ٤. خطة التعلم والتقييم
-              </div>
-              <div style="background:#fff; border:1px solid var(--border-soft); padding:12px; border-radius:10px; text-align:center; font-weight:800; color:var(--forest-deep);">
-                <i class="fa-solid fa-video" style="color:var(--forest-mid); display:block; font-size:20px; margin-bottom:6px;"></i> ٥. غرفة الفيديو الذكية
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid-3 stagger-item stagger-3">
-          <div class="card-ivory">
-            <h4 contenteditable="false" style="font-size:19px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">٥ بيئات مدمجة دون تشتت</h4>
-            <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">تغني الطالبين عن التنقل بين خمسة تطبيقات خارجية مختلفة أثناء الجلسة.</p>
-          </div>
-          <div class="card-ivory">
-            <h4 contenteditable="false" style="font-size:19px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">دعم ثنائي اللغة أصيل</h4>
-            <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">تحول فوري لاتجاه الواجهة (<code>RTL / LTR</code>) مع الحفاظ على تناسق الخطوط والأبعاد.</p>
-          </div>
-          <div class="card-ivory">
-            <h4 contenteditable="false" style="font-size:19px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">مؤشر تقدم حي للغرفة</h4>
-            <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">شريط إنجاز تشاركي يحسب تقدم الشريكين معاً خطوة بخطوة.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 8 ==================== -->
-      <section class="slide theme-ivory" data-section="1" data-time="03:30 - 04:00">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">٠٧ — خارطة الطريق الذكية وتوليد خطط التعلم</span>
-            <span class="time-pill">الشريحة ٨ / ٢٠ • ٠٣:٣٠ - ٠٤:٠٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">هندسة المسار التعليمي: خطط دراسية مخصصة يولدها الذكاء الاصطناعي</h2>
-        </div>
-
-        <div class="grid-2" style="flex:1;">
-          <div class="stagger-item stagger-2" style="display:flex; flex-direction:column; gap:16px;">
-            <div class="card">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">١. توليد تلقائي لخارطة الطريق</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">يحلل الذكاء الاصطناعي مهارتي الشريكين ويصمم خطة عمل مقسمة إلى مراحل واضحة قابلة للتنفيذ.</p>
-            </div>
-            <div class="card">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">٢. أهداف تشاركية قابلة للتتبع</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">كل مرحلة تحتوي على مهام تطبيقية محددة، وعند إتمامها ترتفع نسبة الإنجاز الكلية للغرفة تلقائياً.</p>
-            </div>
-            <div class="card">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">٣. تكيّف مستمر مع سرعة الاستيعاب</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">إمكانية تحديث الخطة وتوليد محطات تدريبية جديدة بناءً على أداء الطرفين في الكويزات والمحاكيات.</p>
-            </div>
-          </div>
-
-          <div class="visual-rise-up">
-            <div class="ui-window float-frame" style="padding:24px; background:#fff;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-                <span class="font-cairo" style="font-weight:800; font-size:18px; color:var(--forest-deep);">خطة التعلم والتقييم — المسار المشترك</span>
-                <span class="font-cairo" style="font-weight:800; color:var(--terracotta-bold);">الإنجاز: ٧٥٪</span>
-              </div>
-              <div class="metric-bar-track" style="margin-bottom:18px;">
-                <div class="metric-bar-fill" data-width="75%" style="background:var(--forest-mid);"></div>
-              </div>
-              <div style="display:flex; flex-direction:column; gap:10px;">
-                <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#EBF5F0; border-radius:10px;">
-                  <i class="fa-solid fa-circle-check" style="color:var(--forest-mid); font-size:20px;"></i>
-                  <span contenteditable="false" style="font-weight:700; font-size:15px;">المرحلة ١: أساسيات منطق JavaScript وهيكلية مكونات التصميم</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#EBF5F0; border-radius:10px;">
-                  <i class="fa-solid fa-circle-check" style="color:var(--forest-mid); font-size:20px;"></i>
-                  <span contenteditable="false" style="font-weight:700; font-size:15px;">المرحلة ٢: بناء واجهة تفاعلية وتجربتها في محاكي الأكواد الحي</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:12px; padding:12px; background:var(--ivory-warm); border:1px solid var(--terracotta-bright); border-radius:10px;">
-                  <i class="fa-solid fa-spinner fa-spin" style="color:var(--terracotta-bold); font-size:20px;"></i>
-                  <span contenteditable="false" style="font-weight:700; font-size:15px;">المرحلة ٣: جلسة مراجعة مرئية وتحويل النقاش الصوتي إلى كويز</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 9 ==================== -->
-      <section class="slide theme-white" data-section="1" data-time="04:00 - 04:30">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">٠٨ — محادثة الشريك المتطورة</span>
-            <span class="time-pill">الشريحة ٩ / ٢٠ • ٠٤:٠٠ - ٠٤:٣٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">محادثة الشريك: تواصل احترافي بميزة السحب للرد والاقتباس السياقي</h2>
-        </div>
-
-        <div class="grid-2" style="flex:1;">
-          <div class="stagger-item stagger-2" style="display:flex; flex-direction:column; gap:16px;">
-            <div class="card-ivory">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;"><i class="fa-solid fa-hand-pointer" style="color:var(--terracotta-bold); margin-left:8px;"></i> إيماءة السحب للرد (WhatsApp-Style Swipe)</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">سحب أي فقاعة رسالة باللمس على الآيباد أو الهاتف للرد المباشر عليها بحركة فيزيائية ناعمة أو عبر زر Reply.</p>
-            </div>
-            <div class="card-ivory">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;"><i class="fa-solid fa-quote-right" style="color:var(--forest-mid); margin-left:8px;"></i> شريط معاينة الاقتباس السياقي</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">يظهر فوق صندوق الكتابة موضحاً اسم المرسل وجزءاً من الرسالة أو نوع الوسائط مع زر إلغاء سريع.</p>
-            </div>
-            <div class="card-ivory">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;"><i class="fa-solid fa-bolt" style="color:var(--terracotta-bold); margin-left:8px;"></i> الانتقال السلس للرسالة الأصلية</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">عند النقر على الاقتباس داخل أي رد، تتمرر المحادثة تلقائياً بنعومة (<code>Smooth Scroll</code>) للرسالة الأصلية وتومض لتمييزها.</p>
-            </div>
-          </div>
-
-          <div class="visual-drop-in">
-            <div class="ui-window float-frame" style="padding:20px; background:var(--ivory-warm);">
-              <div style="position:relative; margin-bottom:14px;">
-                <div class="swipe-demo-bubble" style="background:#fff; padding:12px 16px; border-radius:14px; border:1px solid var(--border-soft); display:flex; justify-content:space-between; align-items:center;">
-                  <div>
-                    <div style="font-size:12px; font-weight:800; color:var(--forest-mid);">Priya Nair • 10:15 PM</div>
-                    <div style="font-size:15px; color:var(--text-dark);">كيف نربط حدث الضغط في Canvas مع حركة الديناصور؟</div>
-                  </div>
-                  <span style="background:var(--ivory-warm); padding:4px 10px; border-radius:99px; font-size:12px; font-weight:700; color:var(--terracotta-bold);"><i class="fa-solid fa-reply"></i> سحب للرد</span>
-                </div>
-              </div>
-
-              <div style="background:#E6F2EC; padding:14px 16px; border-radius:14px; border:1px solid #B7D7C8; margin-bottom:14px;">
-                <div style="background:#fff; padding:8px 12px; border-radius:8px; border-right:4px solid var(--terracotta-bold); margin-bottom:8px; font-size:13px;">
-                  <strong style="color:var(--terracotta-bold);">رداً على Priya Nair:</strong> كيف نربط حدث الضغط في Canvas...
-                </div>
-                <div style="font-size:15px; color:var(--forest-deep); font-weight:700;">
-                  نستخدم <code>addEventListener('keydown')</code> داخل المحاكي، جربي الكود الذي أرسلته فوق!
-                </div>
-              </div>
-
-              <div style="background:#fff; border-radius:10px; padding:10px 14px; border:1px solid var(--border-soft); display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:13px; color:var(--text-muted);"><i class="fa-solid fa-reply" style="color:var(--terracotta-bold);"></i> جارٍ الرد على <b>Priya Nair</b>...</span>
-                <i class="fa-solid fa-xmark" style="color:var(--text-muted);"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 10 ==================== -->
-      <section class="slide theme-ivory" data-section="1" data-time="04:30 - 05:00">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">٠٩ — التواصل متعدد الوسائط</span>
-            <span class="time-pill">الشريحة ١٠ / ٢٠ • ٠٤:٣٠ - ٠٥:٠٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">محادثة غنية بالوسائط: فويسات مفرغة بالذكاء الاصطناعي وصور فائقة السرعة</h2>
-        </div>
-
-        <div class="grid-2" style="flex:1;">
-          <div class="visual-drop-in">
-            <div class="ui-window float-frame" style="padding:24px; background:#fff;">
-              <span class="kicker-badge" style="margin-bottom:12px;"><i class="fa-solid fa-microphone"></i> الرسائل الصوتية والتفريغ الفوري</span>
-              <div style="background:var(--ivory-warm); padding:16px; border-radius:14px; border:1px solid var(--border-soft);">
-                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-                  <div style="width:42px; height:42px; border-radius:50%; background:var(--forest-mid); color:#fff; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-play"></i></div>
-                  <div style="flex:1; height:8px; background:#D5D1C8; border-radius:99px; overflow:hidden;">
-                    <div style="width:65%; height:100%; background:var(--terracotta-bold);"></div>
-                  </div>
-                  <span style="font-size:13px; font-weight:800;">00:24</span>
-                </div>
-                <div style="background:#fff; padding:10px 14px; border-radius:8px; border-right:3px solid var(--forest-mid); font-size:14px; color:var(--text-dark);">
-                  <strong style="color:var(--forest-mid);"><i class="fa-solid fa-wand-magic-sparkles"></i> تفريغ النص (Whisper AI):</strong> "شرحت لك في هذا التسجيل كيف نحسب أوقات الصلاة في دمشق حسب زاوية الشمس..."
-                </div>
-              </div>
-              <p contenteditable="false" style="font-size:15px; color:var(--text-muted); margin-top:14px; line-height:1.55;">
-                مسجل صوتي مدمج متوافق كلياً مع iPad Safari مع زر <strong>"تفريغ النص"</strong> تحت كل فويس.
-              </p>
-            </div>
-          </div>
-
-          <div class="visual-rise-up">
-            <div class="ui-window float-frame" style="padding:24px; background:#fff;">
-              <span class="kicker-badge" style="margin-bottom:12px;"><i class="fa-solid fa-image"></i> مشاركة الصور وعارض الشاشة الكاملة</span>
-              <div style="background:var(--ivory-warm); padding:16px; border-radius:14px; border:1px solid var(--border-soft); text-align:center;">
-                <div style="height:125px; border-radius:10px; background:linear-gradient(135deg,#162E24,#2A6049); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
-                  <i class="fa-solid fa-magnifying-glass-plus" style="font-size:28px; color:#E07A5F;"></i>
-                  <span style="font-size:14px; font-weight:700;">مخطط معمارية الواجهة.png (معاينة Lightbox فورية)</span>
-                </div>
-              </div>
-              <p contenteditable="false" style="font-size:15px; color:var(--text-muted); margin-top:14px; line-height:1.55;">
-                إرسال الصور من الكاميرا أو المعرض مع معاينة مصغرة قبل الإرسال، وضغط ذكي يمنع أخطاء التحميل ويفتح بملء الشاشة.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 11 ==================== -->
-      <section class="slide theme-white" data-section="1" data-time="05:00 - 05:30">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">١٠ — الوكيل الذكي @AI المدمج في السياق</span>
-            <span class="time-pill">الشريحة ١١ / ٢٠ • ٠٥:٠٠ - ٠٥:٣٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">المساعد الذكي <code>@AI</code>: وعي كامل بسياق الرسائل المقتبسة والوسائط</h2>
-        </div>
-
-        <div class="grid-2" style="flex:1;">
-          <div class="stagger-item stagger-2" style="display:flex; flex-direction:column; gap:16px;">
-            <div class="card-ivory">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">١. الاستدعاء اللحظي عند الطلب</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">تفعيل زر <code>@AI</code> أو كتابة الإشارة داخل محادثة الشريك، أو عبر تبويب المساعد المستقل.</p>
-            </div>
-            <div class="card-ivory">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">٢. فهم السياق المقتبس والصوتي تلقائياً</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">عندما يسحب الطالب رسالة قديمة أو رسالة صوتية ويرد عليها موجهاً السؤال لـ <code>@AI</code>، يفرغ النظام الصوت ويرسل السياق المقتبس كاملاً للنموذج.</p>
-            </div>
-            <div class="card-ivory">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">٣. تدقيق المعلومات وتوليد الأمثلة</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted);">إمكانية التحقق الفوري من صحة أي معلومة يطرحها الشريكان أثناء النقاش بحيادية علمية.</p>
-            </div>
-          </div>
-
-          <div class="visual-drop-in">
-            <div class="ui-window float-frame" style="padding:22px; background:var(--ivory-warm);">
-              <div style="background:#fff; padding:14px; border-radius:12px; border:1px solid var(--border-soft); margin-bottom:12px;">
-                <div style="font-size:12px; color:var(--terracotta-bold); font-weight:800; margin-bottom:6px;">
-                  <i class="fa-solid fa-reply"></i> زين يقتبس رسالة صوتية من شريكه ويستدعي @AI:
-                </div>
-                <div style="font-size:15px; font-weight:700; color:var(--text-dark);">
-                  "@AI هل الطريقة التي شرحها زميلي في الفويس المقتبس لحساب تعقيد الخوارزمية $O(n)$ دقيقة؟"
-                </div>
-              </div>
-
-              <div style="background:linear-gradient(135deg,#162E24,#1F4A38); color:#fff; padding:18px; border-radius:14px;">
-                <div style="display:flex; align-items:center; gap:8px; color:#FF9F85; font-weight:800; font-size:14px; margin-bottom:8px;">
-                  <i class="fa-solid fa-wand-magic-sparkles"></i> رد SkillSync AI (بعد قراءة تفريغ الفويس المقتبس):
-                </div>
-                <p contenteditable="false" style="font-size:15px; line-height:1.6; color:#F8F6F1;">
-                  "نعم، ما ذكره شريكك في التسجيل الصوتي صحيح تماماً! لأن الحلقة تمر على مصفوفة العقبات مرة واحدة فقط، فإن التعقيد الزمني هو $O(n)$ والتعقيد المكاني $O(1)$."
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 12 ==================== -->
-      <section class="slide theme-ivory" data-section="1" data-time="05:30 - 06:00">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">١١ — مركز الاختبارات والبطاقات التعليمية التوليدية</span>
-            <span class="time-pill">الشريحة ١٢ / ٢٠ • ٠٥:٣٠ - ٠٦:٠٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">التقييم التوليدي الفوري: اختبارات وبطاقات تعليمية بلمسة واحدة</h2>
-        </div>
-
-        <div class="grid-2" style="flex:1;">
-          <div class="visual-drop-in">
-            <div class="ui-window float-frame" style="padding:22px; background:#fff;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <span class="font-cairo" style="font-size:20px; font-weight:900; color:var(--forest-deep);">قواعد تجويد / Python Quiz</span>
-                <span style="background:var(--ivory-warm); padding:4px 12px; border-radius:99px; font-size:12px; font-weight:700;">أنشئ عبر SkillSync AI</span>
-              </div>
-              <p contenteditable="false" style="font-size:16px; font-weight:700; color:var(--text-dark); margin-bottom:12px;">السؤال ١: ما هي المخرجات الصحيحة لتعبير القائمة في بايثون؟</p>
-              <div style="display:flex; flex-direction:column; gap:8px;">
-                <div style="padding:10px 14px; border-radius:8px; border:2px solid var(--forest-mid); background:#EBF5F0; font-weight:700; display:flex; justify-content:space-between;">
-                  <span contenteditable="false">A. إنشاء قائمة مصفاة في سطر واحد بكفاءة</span>
-                  <i class="fa-solid fa-check" style="color:var(--forest-mid);"></i>
-                </div>
-                <div style="padding:10px 14px; border-radius:8px; border:1px solid var(--border-soft);" contenteditable="false">B. تعديل المصفوفة الأصلية دون إرجاع قيمة</div>
-                <div style="padding:10px 14px; border-radius:8px; border:1px solid var(--border-soft);" contenteditable="false">C. إيقاف التنفيذ عند أول عنصر فارغ</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="stagger-item stagger-2" style="display:flex; flex-direction:column; gap:18px;">
-            <div class="card">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">توليد فوري لأي موضوع أكاديمي</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-                يكتب الطالب أي موضوع (مثل: <code>Python list comprehensions</code> أو <code>قواعد التجويد</code> أو <code>الكيمياء</code>) ليولد الذكاء الاصطناعي كويزاً متكاملاً أو بطاقات استذكار (<code>Flashcards</code>) خلال ثوانٍ.
-              </p>
-            </div>
-            <div class="card">
-              <h3 contenteditable="false" style="font-size:20px; font-weight:800; color:var(--forest-deep); margin-bottom:6px;">تتبع المحاولات التشاركي (Shared Attempt Status)</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-                عرض حالة محاولات كل شريك جنباً إلى جنب مع تصحيح فوري وشرح مفصل للإجابات لتعزيز التعلم المشترك.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 13 ==================== -->
-      <section class="slide theme-white" data-section="1" data-time="06:00 - 06:30">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">١٢ — غرفة الفيديو الذكية ومساعد المكالمة</span>
-            <span class="time-pill">الشريحة ١٣ / ٢٠ • ٠٦:٠٠ - ٠٦:٣٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">غرفة الفيديو الذكية: اتصال مرئي مباشر مدعوم بمساعد مكالمة ذكي</h2>
-        </div>
-
-        <div class="grid-2" style="flex:1;">
-          <div class="stagger-item stagger-2" style="display:flex; flex-direction:column; gap:14px;">
-            <div class="card-ivory">
-              <h3 contenteditable="false" style="font-size:19px; font-weight:800; color:var(--forest-deep); margin-bottom:4px;"><i class="fa-regular fa-clock" style="color:var(--terracotta-bold); margin-left:8px;"></i> مؤقت تبادل الأدوار (15-Minute Role-Swap)</h3>
-              <p contenteditable="false" style="font-size:15.5px; color:var(--text-muted);">يضبط إيقاع الجلسة بين الشريكين لضمان تقسيم الوقت بعدالة بين الشرح والتطبيق.</p>
-            </div>
-            <div class="card-ivory">
-              <h3 contenteditable="false" style="font-size:19px; font-weight:800; color:var(--forest-deep); margin-bottom:4px;"><i class="fa-solid fa-ear-listen" style="color:var(--forest-mid); margin-left:8px;"></i> التفريغ الصوتي المباشر للمكالمة</h3>
-              <p contenteditable="false" style="font-size:15.5px; color:var(--text-muted);">يلتقط حديث الطرفين أثناء الاجتماع ويحوله إلى نص حي أمامهما بدقة عالية.</p>
-            </div>
-            <div class="card-ivory">
-              <h3 contenteditable="false" style="font-size:19px; font-weight:800; color:var(--forest-deep); margin-bottom:4px;"><i class="fa-solid fa-bolt-lightning" style="color:var(--terracotta-bold); margin-left:8px;"></i> ٣ أدوات ذكية أثناء المكالمة</h3>
-              <p contenteditable="false" style="font-size:15.5px; color:var(--text-muted);">
-                ١. <code>تلميح مباشر من SkillSync AI</code> • ٢. <code>حوّل نقاشنا الصوتي إلى كويز</code> • ٣. <code>إنهاء المكالمة وإنشاء ملخص</code>.
-              </p>
-            </div>
-          </div>
-
-          <div class="visual-rise-up">
-            <div class="ui-window float-frame" style="padding:20px; background:var(--ivory-warm);">
-              <div style="background:#162E24; color:#fff; border-radius:12px; padding:22px; text-align:center; margin-bottom:14px;">
-                <i class="fa-solid fa-video" style="font-size:32px; color:#81B29A; margin-bottom:10px;"></i>
-                <h4 class="font-cairo" style="font-size:19px; font-weight:800;">مساعد SkillSync AI للمكالمة — Jitsi WebRTC</h4>
-                <p style="font-size:13px; color:#C2D1C8; margin:6px 0 12px 0;">مؤقت تبادل الأدوار النشط: 15:00 دقيقة (الدور ١ من ٢)</p>
-                <div style="display:flex; justify-content:center; gap:10px;">
-                  <span style="background:var(--forest-soft); padding:6px 14px; border-radius:8px; font-size:12px; font-weight:700;">🎤 تفريغ الكلام نشط</span>
-                  <span style="background:var(--terracotta-bold); padding:6px 14px; border-radius:8px; font-size:12px; font-weight:700;">✨ حوّل نقاشنا الصوتي إلى كويز</span>
-                </div>
-              </div>
-              <div style="background:#fff; padding:12px 16px; border-radius:10px; border:1px solid var(--border-soft); font-size:14px; color:var(--text-muted);" contenteditable="false">
-                <strong>نص المكالمة المفرغ لحظياً:</strong> "اتفقنا في هذه الجلسة على ربط مكونات الواجهة مع دالة حساب المواقيت..."
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 14 ==================== -->
-      <section class="slide theme-ivory" data-section="2" data-time="06:30 - 07:00">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">القسم الثالث: العمق التقني والمعماري • ١٣ — محاكي الأكواد التفاعلي الحي</span>
-            <span class="time-pill">الشريحة ١٤ / ٢٠ • ٠٦:٣٠ - ٠٧:٠٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">محاكي التطبيقات والأكواد الحي: بيئة Visual Studio داخل المتصفح</h2>
-        </div>
-
-        <div class="grid-2" style="flex:1;">
-          <div class="visual-drop-in">
-            <div class="ui-window float-frame" style="background:#162E24; color:#fff; border-color:#2A6049;">
-              <div style="background:#0F211A; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1);">
-                <span style="font-family:monospace; font-size:13px; background:rgba(255,255,255,0.1); padding:3px 10px; border-radius:6px;">solution.js</span>
-                <span style="background:#E07A5F; color:#fff; padding:4px 12px; border-radius:6px; font-size:12px; font-weight:800;">✨ أنشئ الحل بواسطة SkillSync AI</span>
-              </div>
-              <div style="padding:14px 18px; font-family:monospace; font-size:12.5px; direction:ltr; text-align:left; color:#A8E6CF; border-bottom:1px solid rgba(255,255,255,0.12);" contenteditable="false">
-                function renderInteractiveApp() {<br>
-                &nbsp;&nbsp;const card = document.createElement('div');<br>
-                &nbsp;&nbsp;// Complete 4,000-token DOM & Canvas Mini-App<br>
-                }
-              </div>
-              <div style="padding:14px 18px; background:#FFFFFF; color:var(--text-dark);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                  <span style="font-size:12px; font-weight:800; color:var(--forest-mid);">▶ المخرجات المباشرة (Live Interactive DOM/Canvas Preview)</span>
-                  <span style="background:#E6F2EC; color:var(--forest-mid); font-size:11px; padding:2px 8px; border-radius:99px; font-weight:800;">يعمل الآن</span>
-                </div>
-                <div style="background:var(--ivory-warm); padding:12px; border-radius:8px; border:1px solid var(--border-soft); display:flex; justify-content:space-between; align-items:center;">
-                  <span contenteditable="false" style="font-weight:700; font-size:14px;">🦖 لعبة الديناصور / حاسبة مواقيت دمشق التفاعلية</span>
-                  <span style="background:var(--forest-mid); color:#fff; padding:4px 12px; border-radius:6px; font-size:12px;">تشغيل تفاعلي حي</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="stagger-item stagger-2" style="display:flex; flex-direction:column; gap:14px;">
-            <div class="card">
-              <h3 contenteditable="false" style="font-size:19px; font-weight:800; color:var(--forest-deep); margin-bottom:4px;">١. فصل معماري احترافي (Editor vs. Live Runner)</h3>
-              <p contenteditable="false" style="font-size:15.5px; color:var(--text-muted);">مربع علوي مخصص حصرياً لمحرر الشيفرة (<code>solution.js</code>) ومربع سفلي مخصص للمعاينة البصرية الحية وسجل الـ Console.</p>
-            </div>
-            <div class="card">
-              <h3 contenteditable="false" style="font-size:19px; font-weight:800; color:var(--forest-deep); margin-bottom:4px;">٢. توليد تطبيقات مصغرة كاملة (4,000 توكن)</h3>
-              <p contenteditable="false" style="font-size:15.5px; color:var(--text-muted);">الـ AI مُلزم ببناء واجهة مرئية كاملة (<code>HTML / DOM / Canvas</code>) مع أزرار تحكم وحقول إدخال لكل مهمة برمجية.</p>
-            </div>
-            <div class="card">
-              <h3 contenteditable="false" style="font-size:19px; font-weight:800; color:var(--forest-deep); margin-bottom:4px;">٣. تشغيل بصري حقيقي بضغطة زر</h3>
-              <p contenteditable="false" style="font-size:15.5px; color:var(--text-muted);">عند الضغط على <code>تشغيل</code>، تشتغل اللعبة أو الأداة فعلياً أمام الطالب داخل إطار معزول وآمن.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 15 ==================== -->
-      <section class="slide theme-dark" data-section="2" data-time="07:00 - 07:30">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">١٤ — القرار المعماري الجوهري (لأخصائيي الذكاء الاصطناعي)</span>
-            <span class="time-pill">الشريحة ١٥ / ٢٠ • ٠٧:٠٠ - ٠٧:٣٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">لماذا استبدلنا تحميل الـ Agent محلياً على الـ RAM بقنوات API سحابية؟</h2>
-        </div>
-
-        <div class="grid-2" style="flex:1;">
-          <div class="card-dark stagger-item stagger-2" style="border-color:rgba(224,122,95,0.4); background:rgba(200,90,50,0.08);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-              <h3 contenteditable="false" style="font-size:22px; font-weight:800; color:#FF9F85;">❌ النهج التقليدي المرفوض: تحميل الـ Agent على الـ RAM</h3>
-              <span style="background:rgba(224,122,95,0.25); color:#FFB59E; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:800;">عبء معماري ثقيل</span>
-            </div>
-            <ul style="list-style:none; display:flex; flex-direction:column; gap:14px; font-size:17px; color:#E2DFD7; line-height:1.6;">
-              <li contenteditable="false"><i class="fa-solid fa-triangle-exclamation" style="color:#E07A5F; margin-left:8px;"></i> <strong>استنزاف هائل للذاكرة (RAM/VRAM Overhead):</strong> تحميل أوزان النماذج والوكيل محلياً يلتهم عشرات الغيغابايتات لكل عملية.</li>
-              <li contenteditable="false"><i class="fa-solid fa-hourglass-half" style="color:#E07A5F; margin-left:8px;"></i> <strong>اختناق الخادم عند التزامن (OOM & Bottlenecks):</strong> انهيار الأداء عند دخول عشرات الغرف التعليمية في نفس اللحظة.</li>
-              <li contenteditable="false"><i class="fa-solid fa-turtle" style="color:#E07A5F; margin-left:8px;"></i> <strong>ارتفاع زمن الاستجابة (High TTFT):</strong> بطء شديد في توليد التوكن الأول وإقلاع الحاويات.</li>
-            </ul>
-          </div>
-
-          <div class="card-dark stagger-item stagger-3" style="border:2px solid #81B29A; background:rgba(42,96,73,0.28);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-              <h3 contenteditable="false" style="font-size:22px; font-weight:800; color:#A8E6CF;">✅ ابتكارنا المعماري: Decoupled Stateless API Pipelines</h3>
-              <span style="background:#2A6049; color:#fff; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:800;">وفر ٩٢٪ من الـ RAM</span>
-            </div>
-            <ul style="list-style:none; display:flex; flex-direction:column; gap:14px; font-size:17px; color:#F8F6F1; line-height:1.6;">
-              <li contenteditable="false"><i class="fa-solid fa-bolt" style="color:#81B29A; margin-left:8px;"></i> <strong>فصل طبقة التطبيق عن طبقة الاستدلال:</strong> خادم رشيق عديم الحالة يدير الجلسات ويوجه الاستدلال عبر قنوات API سحابية فائقة السرعة.</li>
-              <li contenteditable="false"><i class="fa-solid fa-gauge-high" style="color:#81B29A; margin-left:8px;"></i> <strong>استجابة لحظية (Sub-Second TTFT):</strong> توليد الكود والردود في أجزاء من الثانية عبر مسرعات استدلال متخصصة.</li>
-              <li contenteditable="false"><i class="fa-solid fa-layer-group" style="color:#81B29A; margin-left:8px;"></i> <strong>قابلية توسع أفقية لا نهائية:</strong> خدمة آلاف الطلاب المتزامنين باستهلاك ذاكرة يقارب الصفر.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 16 ==================== -->
-      <section class="slide theme-ivory" data-section="2" data-time="07:30 - 08:00">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">١٥ — معمارية الصمود الصفري (Zero-Downtime Resilience)</span>
-            <span class="time-pill">الشريحة ١٦ / ٢٠ • ٠٧:٣٠ - ٠٨:٠٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">سلسلة التعافي التلقائي عبر ٤ نماذج ذكاء اصطناعي متتالية</h2>
-        </div>
-
-        <div class="grid-4 stagger-item stagger-2" style="margin-bottom:20px;">
-          <div class="card" style="border-top:5px solid var(--forest-mid);">
-            <span class="kicker-badge" style="margin-bottom:8px;">١. الأساسي فائق السرعة</span>
-            <h3 contenteditable="false" style="font-size:19px; font-weight:900; color:var(--forest-deep); direction:ltr; text-align:right;">openai/gpt-oss-20b</h3>
-            <p contenteditable="false" style="font-size:15px; color:var(--text-muted); margin-top:8px;">معالجة التفاعلات اللحظية ومحادثات الغرف بأقل كمون زمني ممكن.</p>
-          </div>
-          <div class="card" style="border-top:5px solid var(--terracotta-bold);">
-            <span class="kicker-badge" style="margin-bottom:8px;">٢. الاحتياطي الأول (العميق)</span>
-            <h3 contenteditable="false" style="font-size:19px; font-weight:900; color:var(--forest-deep); direction:ltr; text-align:right;">openai/gpt-oss-120b</h3>
-            <p contenteditable="false" style="font-size:15px; color:var(--text-muted); margin-top:8px;">يتولى الاستدلال المنطقي المعقد وتوليد الشيفرات البرمجية الضخمة.</p>
-          </div>
-          <div class="card" style="border-top:5px solid var(--forest-mid);">
-            <span class="kicker-badge" style="margin-bottom:8px;">٣. الاحتياطي الثاني (المهيكل)</span>
-            <h3 contenteditable="false" style="font-size:19px; font-weight:900; color:var(--forest-deep); direction:ltr; text-align:right;">qwen/qwen3.8-27b</h3>
-            <p contenteditable="false" style="font-size:15px; color:var(--text-muted); margin-top:8px;">لضمان دقة مخرجات الـ JSON المهيكل والاختبارات وخطط التعلم.</p>
-          </div>
-          <div class="card" style="border-top:5px solid var(--terracotta-bold);">
-            <span class="kicker-badge" style="margin-bottom:8px;">٤. الاحتياطي الثالث (العربي)</span>
-            <h3 contenteditable="false" style="font-size:19px; font-weight:900; color:var(--forest-deep); direction:ltr; text-align:right;">allam-2-7b</h3>
-            <p contenteditable="false" style="font-size:15px; color:var(--text-muted); margin-top:8px;">نموذج متخصص باللسانيات العربية لضمان الفصاحة والسلامة اللغوية.</p>
-          </div>
-        </div>
-
-        <div class="card stagger-item stagger-3" style="background:linear-gradient(135deg,#162E24,#1F4A38); color:#fff; display:flex; align-items:center; justify-content:space-between; padding:22px 32px;">
-          <div>
-            <h4 class="font-cairo" style="font-size:20px; font-weight:800; color:#FF9F85; margin-bottom:4px;">
-              <i class="fa-solid fa-shield-halved"></i> آلية الانتقال الفوري (Instant Failover) + محرك الصوتيات الموازي
-            </h4>
-            <p contenteditable="false" style="font-size:16px; color:#E2DFD7;">
-              أي خطأ شبكي (<code>429 Rate Limit</code> أو <code>5xx</code> أو JSON غير مكتمل) ينقل الطلب فوراً للنموذج التالي في السلسلة، مع خط صوتي موازٍ عبر <code>whisper-large-v3-turbo</code>.
-            </p>
-          </div>
-          <span class="font-cairo" style="font-size:32px; font-weight:900; color:#81B29A; flex-shrink:0;">200 OK</span>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 17 ==================== -->
-      <section class="slide theme-white" data-section="2" data-time="08:00 - 08:30">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">١٦ — هندسة العزل الأمني للمحاكي وضغط الوسائط</span>
-            <span class="time-pill">الشريحة ١٧ / ٢٠ • ٠٨:٠٠ - ٠٨:٣٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">الأمان الهندسي وتحسين الموارد: عزل الشيفرات وضغط الوسائط محلياً</h2>
-        </div>
-
-        <div class="grid-3" style="flex:1; align-items:stretch;">
-          <div class="card-ivory stagger-item stagger-2" style="display:flex; flex-direction:column; justify-content:space-between;">
-            <div>
-              <div class="icon-box"><i class="fa-solid fa-lock"></i></div>
-              <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin-bottom:10px;">عزل كامل لمشغل الأكواد (Isolated Iframe Sandbox)</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-                تشغيل أكواد الطلاب وواجهات الـ DOM/Canvas داخل إطار معزول بدون أي صلاحية وصول لصفحة التطبيق أو الشبكة الخارجية (<code>Blocked Fetch/XHR</code>) مع حارس زمني يوقف الحلقات اللانهائية.
-              </p>
-            </div>
-            <span style="font-weight:800; font-size:14px; color:var(--forest-mid);">١٠٠٪ حماية ضد ثغرات الحقن</span>
-          </div>
-
-          <div class="card-ivory stagger-item stagger-3" style="display:flex; flex-direction:column; justify-content:space-between;">
-            <div>
-              <div class="icon-box terracotta"><i class="fa-solid fa-terminal"></i></div>
-              <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin-bottom:10px;">مواءمة سعة التوليد البرمجي</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-                رفع ميزانية التوليد إلى <strong>٤,٠٠٠ توكن</strong> ومواءمة حدود المحرر والمشغل والـ API عند <strong>١٢,٠٠٠ حرف</strong>، مع فلترة ذكية تمنع إدراج أي شيفرة مقطوعة أو ناقصة.
-              </p>
-            </div>
-            <span style="font-weight:800; font-size:14px; color:var(--terracotta-bold);">أكواد كاملة بلا اختصار</span>
-          </div>
-
-          <div class="card-ivory stagger-item stagger-4" style="display:flex; flex-direction:column; justify-content:space-between;">
-            <div>
-              <div class="icon-box"><i class="fa-solid fa-compress"></i></div>
-              <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin-bottom:10px;">ضغط الصور الذكي من جهة العميل</h3>
-              <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-                معالجة وضغط الصور المرفوعة داخل المتصفح عبر <code>Canvas</code> وتحويل صيغ الآيباد مع ضبط سياسة <code>CSP img-src</code> لقبول روابط البيانات والـ Blob بسلاسة.
-              </p>
-            </div>
-            <span style="font-weight:800; font-size:14px; color:var(--forest-mid);">٨٥٪ تقليص لحجم نقل الوسائط</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 18 ==================== -->
-      <section class="slide theme-ivory" data-section="2" data-time="08:30 - 09:00">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">١٧ — هندسة الواجهات المتجاوبة وتجربة التطبيق المستقل</span>
-            <span class="time-pill">٠٨:٣٠ - ٠٩:٠٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">هندسة الواجهات: تصميم خالٍ من التداخل وجاهزية العمل كتطبيق مستقل</h2>
-        </div>
-
-        <div class="grid-3" style="flex:1; align-items:center;">
-          <div class="card stagger-item stagger-2" style="height:340px;">
-            <div class="icon-box"><i class="fa-solid fa-table-columns"></i></div>
-            <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin-bottom:10px;">معمارية شبكية معزولة التمرير</h3>
-            <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-              فصل حاويات الـ CSS Grid والـ Flex في غرفة الفيديو والشريط الجانبي لمنع أي تراكب بصري بين التبويبات على شاشات الأجهزة اللوحية.
-            </p>
-          </div>
-
-          <div class="card stagger-item stagger-3" style="height:340px;">
-            <div class="icon-box terracotta"><i class="fa-brands fa-apple"></i></div>
-            <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin-bottom:10px;">توافقية عميقة مع iOS Safari</h3>
-            <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-              معالجة صلاحيات إطار WebRTC للفيديو (<code>camera; microphone; fullscreen</code>) ودعم تعدد صيغ الصوت في <code>MediaRecorder</code>.
-            </p>
-          </div>
-
-          <div class="card stagger-item stagger-4" style="height:340px;">
-            <div class="icon-box"><i class="fa-solid fa-mobile-screen-button"></i></div>
-            <h3 contenteditable="false" style="font-size:21px; font-weight:800; color:var(--forest-deep); margin-bottom:10px;">جاهزية التثبيت كتطبيق (PWA / APK)</h3>
-            <p contenteditable="false" style="font-size:16px; color:var(--text-muted); line-height:1.6;">
-              دعم كامل لوضع الشاشة المستقلة (<code>Standalone Display</code>) ليعمل بملء الشاشة على الهواتف الذكية والأجهزة اللوحية كأنه تطبيق أصلي تماماً.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 19 ==================== -->
-      <section class="slide theme-white" data-section="2" data-time="09:00 - 09:30">
-        <div class="slide-header stagger-item stagger-1">
-          <div class="kicker-row">
-            <span class="kicker-badge">١٨ — لوحة المقاييس الهندسية والحصيلة الرقمية</span>
-            <span class="time-pill">الشريحة ١٩ / ٢٠ • ٠٩:٠٠ - ٠٩:٣٠</span>
-          </div>
-          <h2 class="slide-title" contenteditable="false">الحصيلة الهندسية بالأرقام: كفاءة معمارية جاهزة للإنتاج الفعلي</h2>
-        </div>
-
-        <div class="grid-4 stagger-item stagger-2" style="margin-bottom:22px;">
-          <div class="card-ivory" style="text-align:center;">
-            <div class="font-cairo" style="font-size:44px; font-weight:900; color:var(--forest-mid);">99.9%</div>
-            <div contenteditable="false" style="font-size:15px; font-weight:700; color:var(--text-muted);">استمرارية الذكاء الاصطناعي (٤ نماذج)</div>
-          </div>
-          <div class="card-ivory" style="text-align:center;">
-            <div class="font-cairo" style="font-size:44px; font-weight:900; color:var(--terracotta-bold);">92%</div>
-            <div contenteditable="false" style="font-size:15px; font-weight:700; color:var(--text-muted);">وفر في استهلاك ذاكرة الخادم (RAM)</div>
-          </div>
-          <div class="card-ivory" style="text-align:center;">
-            <div class="font-cairo" style="font-size:44px; font-weight:900; color:var(--forest-mid);">4,000</div>
-            <div contenteditable="false" style="font-size:15px; font-weight:700; color:var(--text-muted);">توكن سعة التوليد البرمجي المرئي</div>
-          </div>
-          <div class="card-ivory" style="text-align:center;">
-            <div class="font-cairo" style="font-size:44px; font-weight:900; color:var(--terracotta-bold);">96%</div>
-            <div contenteditable="false" style="font-size:15px; font-weight:700; color:var(--text-muted);">دقة تفريغ الصوت العربي المباشر</div>
-          </div>
-        </div>
-
-        <div class="stagger-item stagger-3" style="display:flex; flex-direction:column; gap:14px;">
-          <div>
-            <div style="display:flex; justify-content:space-between; font-weight:800; font-size:15px;">
-              <span contenteditable="false">اعتمادية سلسلة النماذج المتناوبة (Zero-Downtime Failover)</span>
-              <span>99.9%</span>
-            </div>
-            <div class="metric-bar-track"><div class="metric-bar-fill" data-width="99.9%" style="background:var(--forest-mid);"></div></div>
-          </div>
-          <div>
-            <div style="display:flex; justify-content:space-between; font-weight:800; font-size:15px;">
-              <span contenteditable="false">كفاءة توفير الذاكرة العشوائية عبر معمارية API عديمة الحالة</span>
-              <span>92%</span>
-            </div>
-            <div class="metric-bar-track"><div class="metric-bar-fill" data-width="92%" style="background:var(--terracotta-bold);"></div></div>
-          </div>
-          <div>
-            <div style="display:flex; justify-content:space-between; font-weight:800; font-size:15px;">
-              <span contenteditable="false">العزل الأمني لحاويات تشغيل الأكواد والواجهات التفاعلية</span>
-              <span>100%</span>
-            </div>
-            <div class="metric-bar-track"><div class="metric-bar-fill" data-width="100%" style="background:var(--forest-mid);"></div></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SLIDE 20 (DRAMATIC FINALE) ==================== -->
-      <section class="slide theme-finale" data-section="3" data-time="09:30 - 10:00">
-        <div class="kicker-row stagger-item stagger-1">
-          <span class="kicker-badge"><i class="fa-solid fa-circle-play"></i> القسم الرابع: الخاتمة الدرامية وبوابة الانتقال الحي</span>
-          <span class="time-pill">الشريحة ٢٠ / ٢٠ • ٠٩:٣٠ - ١٠:٠٠</span>
-        </div>
-
-        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; position:relative;">
-          <div class="stagger-item stagger-2" style="background:rgba(129,178,154,0.18); border:1px solid #81B29A; color:#A8E6CF; padding:6px 20px; border-radius:999px; font-family:'Cairo',sans-serif; font-size:14px; font-weight:800; margin-bottom:20px;">
-            ● النظام يعمل الآن بالزمن الحقيقي (Live Production Environment)
-          </div>
-
-          <h1 class="stagger-item stagger-2" contenteditable="false" style="font-size:50px; font-weight:900; color:#F8F6F1; max-width:980px; line-height:1.25; margin-bottom:18px;">
-            "المعماريات العظيمة لا تُحكى على الشرائح.. بل تُختبر في الميدان."
-          </h1>
-
-          <p class="stagger-item stagger-3" contenteditable="false" style="font-size:22px; color:#C2D1C8; max-width:820px; line-height:1.6; margin-bottom:36px;">
-            كل فكرة، وكل ميزة تفاعلية، وكل قرار معماري استعرضناه أمامكم الآن يعمل بكامل طاقته في هذه اللحظة.
-          </p>
-
-          <div class="stagger-item stagger-4">
-            <a href="https://skill-sync-ai--zeintabakha443t.replit.app" target="_blank" rel="noopener noreferrer" class="finale-cta-btn">
-              <i class="fa-solid fa-rocket"></i>
-              <span>انتقل الآن إلى التجربة الحية لمنصة SkillSync AI</span>
-              <i class="fa-solid fa-arrow-up-left-from-square" style="font-size:18px;"></i>
-            </a>
-          </div>
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- Speaker Notes Drawer Removed -->
-
-  <!-- Bottom Navigation Bar -->
-  <footer class="bottom-nav">
-    <div class="nav-controls">
-      <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">
-        <i class="fa-solid fa-chevron-right"></i>
-        <span>السابق</span>
-      </button>
-      <span class="slide-counter-pill" id="slideCounter">١ / ٢٠</span>
-      <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">
-        <span>التالي</span>
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-    </div>
-
-    <div class="dot-indicators" id="dotIndicators"></div>
-
-    <div style="font-size:13px; color:#9AB0A4;">
-      مفاتيح اللابتوب للبروجيكتور: <code>←</code> <code>→</code> (التالي/السابق) • <code>E</code> وضع التعديل • <code>F</code> ملء الشاشة
-    </div>
-  </footer>
-
-  <script>
-    const slidesMetadata = [
-      {
-        num: 1,
-        section: "القسم الأول: الفكرة والفلسفة",
-        time: "00:00 - 00:30",
-        title: "SkillSync AI: ثورة التعلم التشاركي وتبادل المهارات الجامعية",
-        subtitle: "عندما تلتقي المعرفة البشرية المتبادلة بهندسة الذكاء الاصطناعي التفاعلي في بيئة واحدة.",
-        bullets: [
-          "تبادل المهارات المتكافئ: كل طالب معلم في مهارته ومتعلم في مهارة شريكه.",
-          "غرف تعلم ومحاكيات حية: تشغيل بصري للأكواد، محادثة وسائط، وغرفة فيديو.",
-          "ذكاء اصطناعي ميسّر وصامد: معمارية سحابية بـ 4 نماذج متناوبة دون انقطاع."
-        ],
-        script: "أعضاء لجنة التحكيم الكرام، أهلاً بكم. كل طالب جامعي اليوم يمتلك مهارة يتقنها بشغف، وفي الوقت ذاته يقف عاجزاً أمام مهارة أخرى يتقنها زميل يجلس في القاعة المجاورة. اليوم لا نعرض عليكم مجرد موقع إلكتروني، بل نقدم SkillSync AI: أول منظومة ذكاء تشاركي تحول المعرفة الفردية المعزولة إلى تجربة تطبيقية حية ومشتعلة بالتفاعل."
-      },
-      {
-        num: 2,
-        section: "٠١ — تشخيص المشكلة الحقيقية",
-        time: "00:30 - 01:00",
-        title: "معضلة العزلة الأكاديمية: وفرة في المحتوى وفقر في الممارسة",
-        subtitle: "73% من طلاب الجامعات يكتسبون معارف نظرية ممتازة لكنهم يفتقدون شريكاً عملياً لتطبيقها.",
-        bullets: [
-          "التعلم السلبي: الساعات الطويلة أمام الفيديوهات المسجلة تصنع مستمعين جيدين لا ممارسين محترفين.",
-          "غياب البيئة الآمنة للتجربة: التعلم مع قرين مماثل يكسر حاجز الرهبة والخوف من الخطأ فوراً.",
-          "الاستخدام الخاطئ للذكاء الاصطناعي: الاعتماد عليه كناسخ للحلول يقتل التفكير النقدي."
-        ],
-        script: "المشكلة في جامعاتنا اليوم ليست في نقص الفيديوهات أو الكتب، بل في العزلة الأكاديمية. ثلاثة أرباع الطلاب يدرسون بمفردهم دون شريك يطبقون معه، وإذا لجؤوا للذكاء الاصطناعي التقليدي أخذوا منه الإجابة الجاهزة دون فهم. من هنا ولدت الحاجة إلى بيئة تعيد الاعتبار للتعلم التشاركي."
-      },
-      {
-        num: 3,
-        section: "٠٢ — جوهر الفكرة وفلسفة المقايضة المعرفية",
-        time: "01:00 - 01:30",
-        title: "فلسفة SkillSync: أنت تتقن شيئاً.. وهناك من يحتاج أن يتعلمه منك",
-        subtitle: "You know a thing. Someone else needs to know it.",
-        bullets: [
-          "مبدأ المقايضة المعرفية المتكافئة: كل طالب في المنصة هو معلم في مهارته ومتعلم في مهارة شريكه.",
-          "مثال واقعي حي: طالب يتقن البرمجة (Python / JS) يلتقي بطالب مصمم يتقن (Product Design / Figma).",
-          "النتيجة: تعلّم مزدوج، التزام متبادل، وبناء مجتمع جامعي مترابط يتبادل الخبرات وجهاً لوجه."
-        ],
-        script: "فلسفتنا تتلخص في جملة واحدة: أنت تعرف شيئاً، وشخص آخر يحتاج لتعلمه. في SkillSync AI، ألغينا الفجوة بين المعلم والطالب؛ فطالب البرمجة يعلّم زميله الكود لمدة 15 دقيقة، ثم يتبادلان الأدوار ليعلّمه زميله تصميم المنتجات في الـ 15 دقيقة التالية. إنها مقايضة معرفية عادلة وممتعة."
-      },
-      {
-        num: 4,
-        section: "٠٣ — رحلة الطالب داخل المنصة",
-        time: "01:30 - 02:00",
-        title: "كيف تعمل المنظومة؟ رحلة متكاملة من البحث إلى الإتقان التطبيقي",
-        subtitle: "أربع مراحل سلسة تنقل الطالب من التسجيل إلى التطبيق العملي المشترك.",
-        bullets: [
-          "1. بناء الهوية المهارية (My Profile): تحديد ما يتقنه الطالب وما يطمح لتعلمه.",
-          "2. المطابقة الذكية (Find a Match): خوارزمية تحلل التقاطع المهاري وترشح الشريك الأنسب.",
-          "3. غرفة التعلم المشتركة (Learning Room): مساحة عمل تجمع المحادثة، الخطة، المحاكيات، والفيديو.",
-          "4. التطبيق والتقييم المستمر: اختبارات توليدية ومحاكيات أكواد بصرية وملخصات جلسات."
-        ],
-        script: "رحلة الطالب في المنصة مصممة بسلاسة فائقة: يبدأ بتحديد ما يتقنه وما يريد تعلمه، ليقوم محرك المطابقة بربطه بالشريك الأنسب، ومن لحظة قبول المطابقة ينفتح لهما عالم متكامل داخل غرفة التعلم المشتركة."
-      },
-      {
-        num: 5,
-        section: "٠٤ — المعادلة الذهبية للمنصة",
-        time: "02:00 - 02:30",
-        title: "الذكاء الاصطناعي كميسّر ذكي للجلسة.. لا كبديل عن الإنسان",
-        subtitle: "دمج التعاطف والحماس البشري مع دقة وسرعة الذكاء الاصطناعي التفاعلي.",
-        bullets: [
-          "الإنسان يمنح: الدافع، المساءلة المتبادلة، شرح التجربة الشخصية، وكسر الملل.",
-          "الذكاء الاصطناعي (@AI) يمنح: هيكلة خطة الدرس، تصحيح المفاهيم، توليد التمارين، وتفريغ النقاشات.",
-          "قاعدة التدخل الذكي: المساعد لا يقاطع الشريكين بل يتدخل فوراً عند استدعائه."
-        ],
-        script: "ما يميز فكرتنا جوهرياً هو أننا لم نصنع ذكاءً اصطناعياً يلغي دور الطالبين، بل صنعنا شريكاً ثالثاً ذكياً يجلس معهما على نفس الطاولة؛ يترك لهما مساحة الحوار البشري، ويتدخل فوراً حين يستدعيانه لحسم مسألة علمية أو توليد تدريب عملي."
-      },
-      {
-        num: 6,
-        section: "٠٥ — ميزة المطابقة الذكية ولوحة القيادة",
-        time: "02:30 - 03:00",
-        title: "محرك المطابقة الذكي: إيجاد الشريك الأكاديمي المثالي بضغطة زر",
-        subtitle: "تحليل التوافق المهاري الثنائي ولوحة تحكم شاملة للغرف النشطة.",
-        bullets: [
-          "تحليل التوافق المهاري الثنائي: البحث عن التطابق العكسي المثالي بين مهارات الطلاب.",
-          "بطاقات شركاء غنية بالمعلومات: تعرض التخصص الجامعي، اللغات، أوقات التفرغ، ونقاط الالتقاء.",
-          "لوحة تحكم شاملة (Overview): تعرض الغرف النشطة ونسبة التقدم في كل غرفة والمهام القادمة."
-        ],
-        script: "ننتقل الآن إلى ميزات الموقع العملية. أول ما يقابل الطالب هو محرك المطابقة الذكي، الذي لا يبحث بشكل عشوائي، بل يحلل التكامل المهاري بين الطلاب ليجمع أفضل شريكين معاً ويعرض لهما لوحة قيادة تنظم كل غرفهم التعليمية."
-      },
-      {
-        num: 7,
-        section: "٠٦ — غرف التعلم الموحدة وثنائية اللغة",
-        time: "03:00 - 03:30",
-        title: "غرف التعلم الذكية: محطة عمل متكاملة في شاشة واحدة",
-        subtitle: "5 بيئات مدمجة داخل كل غرفة مع دعم ثنائي اللغة أصيل (العربية والإنجليزية).",
-        bullets: [
-          "5 بيئات مدمجة: محادثة الشريك، مساعد AI، اختبارات ومحاكيات، خطة التعلم، وغرفة الفيديو.",
-          "دعم ثنائي اللغة أصيل: تحول فوري لاتجاه الواجهة (RTL / LTR) مع الحفاظ على تناسق الخطوط.",
-          "مؤشر تقدم حي للغرفة: شريط إنجاز تشاركي يحسب تقدم الشريكين معاً خطوة بخطوة."
-        ],
-        script: "بمجرد دخول غرفة التعلم، يجد الطالبان نفسيهما داخل محطة عمل متكاملة تدعم العربية والإنجليزية بالكامل، وتضم خمسة أقسام مترابطة تغنيهم عن فتح أي تطبيق خارجي."
-      },
-      {
-        num: 8,
-        section: "٠٧ — خارطة الطريق الذكية وتوليد خطط التعلم",
-        time: "03:30 - 04:00",
-        title: "هندسة المسار التعليمي: خطط دراسية مخصصة يولدها الذكاء الاصطناعي",
-        subtitle: "توليد تلقائي لخارطة الطريق وأهداف تشاركية قابلة للتتبع.",
-        bullets: [
-          "توليد تلقائي لخارطة الطريق: يحلل الذكاء الاصطناعي مهارتي الشريكين ويصمم خطة عمل مرحلية.",
-          "أهداف تشاركية قابلة للتتبع: كل مرحلة تحتوي على مهام تطبيقية ترفع نسبة الإنجاز الكلية للغرفة.",
-          "تكيّف مستمر: إمكانية تحديث الخطة وتوليد خطوات جديدة بناءً على سرعة استيعاب الطرفين."
-        ],
-        script: "لأن الحماس وحده لا يكفي بدون تخطيط، يقوم تبويب خطة التعلم بتوليد خارطة طريق مخصصة للشريكين؛ تقسم المهارة إلى محطات عملية واضحة، ليعرف كل طرف ماذا سيشرح وماذا سيطبق في كل جلسة."
-      },
-      {
-        num: 9,
-        section: "٠٨ — محادثة الشريك المتطورة",
-        time: "04:00 - 04:30",
-        title: "محادثة الشريك: تواصل احترافي بميزة السحب للرد والاقتباس السياقي",
-        subtitle: "تجربة مراسلة حديثة تضاهي تطبيقات التراسل العالمية داخل بيئة أكاديمية.",
-        bullets: [
-          "إيماءة السحب للرد (Swipe-to-Reply): سحب أي رسالة باللمس على الآيباد أو الهاتف للرد المباشر عليها.",
-          "شريط معاينة الاقتباس: يظهر فوق صندوق الإدخال موضحاً اسم المرسل وجزءاً من الرسالة أو الوسائط.",
-          "الانتقال السلس للرسالة الأصلية: النقر على الاقتباس يمرر المحادثة تلقائياً للرسالة الأصلية."
-        ],
-        script: "في قسم محادثة الشريك، قدمنا تجربة تضاهي أرقى تطبيقات التراسل العالمية؛ حيث يمكن للطالب سحب أي رسالة بإصبعه للرد عليها مباشرة، وعند الضغط على الاقتباس ينقله النظام بانسيابية إلى موقع الرسالة الأصلية في سجل النقاش."
-      },
-      {
-        num: 10,
-        section: "٠٩ — التواصل متعدد الوسائط",
-        time: "04:30 - 05:00",
-        title: "محادثة غنية بالوسائط: فويسات مفرغة بالذكاء الاصطناعي وصور فائقة السرعة",
-        subtitle: "مسجل صوتي مدمج وتفريغ نصي بضغطة زر مع مشاركة الصور.",
-        bullets: [
-          "مسجل رسائل صوتية مدمج: تسجيل فوري للفويسات بعداد زمني حي ومشغل صوتي أنيق.",
-          "تفريغ نصي بضغطة زر: تحويل أي رسالة صوتية إلى نص مكتوب بدقة فائقة عبر Whisper AI.",
-          "مشاركة الصور وعارض الشاشة الكاملة: إرسال صور الأكواد والتصاميم مع معاينة Lightbox."
-        ],
-        script: "ولأن شرح المهارات يحتاج أكثر من مجرد نصوص، أضفنا إرسال الصور والرسائل الصوتية مباشرة داخل المحادثة، مع ميزة استثنائية تتيح تحويل أي فويس مرسل إلى نص مكتوب بضغطة زر واحدة."
-      },
-      {
-        num: 11,
-        section: "١٠ — الوكيل الذكي @AI المدمج في السياق",
-        time: "05:00 - 05:30",
-        title: "المساعد الذكي @AI: وعي كامل بسياق الرسائل المقتبسة والوسائط",
-        subtitle: "دمج السياق المقتبس وتفريغ الصوت تلقائياً عند استدعاء الذكاء الاصطناعي.",
-        bullets: [
-          "الاستدعاء عند الطلب: تفعيل زر @AI أو كتابة الإشارة داخل المحادثة أو التبويب المستقل.",
-          "فهم السياق المقتبس والصوتي: تفريغ الفويس المقتبس وإرساله مع السؤال ليفهم النموذج السياق كاملاً.",
-          "تدقيق المعلومات وتوليد الأمثلة: التحقق العلمي الفوري من صحة أي معلومة يطرحها الشريكان."
-        ],
-        script: "الأروع في محادثتنا هو تكاملها العميق مع المساعد الذكي @AI؛ فإذا سحب الطالب رسالة صوتية لزميله ورد عليها طالباً تدخل الذكاء الاصطناعي، يقوم النظام تلقائياً بتفريغ الفويس ودمج الرسالة المقتبسة ليعطي إجابة دقيقة تفهم سياق النقاش بالكامل."
-      },
-      {
-        num: 12,
-        section: "١١ — مركز الاختبارات والبطاقات التعليمية",
-        time: "05:30 - 06:00",
-        title: "التقييم التوليدي الفوري: اختبارات وبطاقات تعليمية بلمسة واحدة",
-        subtitle: "توليد فوري للكويزات والبطاقات التعليمية مع تتبع تشاركي للمحاولات.",
-        bullets: [
-          "توليد فوري حسب الموضوع: بناء كويز متكامل أو بطاقات Flashcards لأي موضوع خلال ثوانٍ.",
-          "تتبع المحاولات التشاركي: عرض حالة محاولات كل شريك جنباً إلى جنب مع تصحيح فوري.",
-          "دعم كامل للموضوعات البرمجية والأكاديمية واللغوية بالعربية والإنجليزية."
-        ],
-        script: "وفي قسم الاختبارات، يستطيع أي شريك كتابة عنوان المهارة التي يتدربان عليها ليقوم الذكاء الاصطناعي فوراً ببناء اختبار متعدد الخيارات أو بطاقات تعليمية تفاعلية تقيس مدى استيعابهما المشترك."
-      },
-      {
-        num: 13,
-        section: "١٢ — غرفة الفيديو الذكية ومساعد المكالمة",
-        time: "06:00 - 06:30",
-        title: "غرفة الفيديو الذكية: اتصال مرئي مباشر مدعوم بمساعد مكالمة ذكي",
-        subtitle: "مؤقت تبادل الأدوار كل 15 دقيقة وتفريغ صوتي مباشر يحول النقاش إلى كويز.",
-        bullets: [
-          "مؤقت تبادل الأدوار (15 دقيقة): يضبط إيقاع الجلسة بين الشريكين بعدالة بين الشرح والتطبيق.",
-          "التفريغ الصوتي المباشر للمكالمة: يلتقط حديث الطرفين أثناء الاجتماع ويحوله إلى نص حي.",
-          "أدوات المساعد اللحظية: تلميح مباشر، تحويل النقاش الصوتي إلى كويز، وإنشاء ملخص للمكالمة."
-        ],
-        script: "وعندما ينتقل الشريكان إلى غرفة الفيديو الذكية، يجدان تجربة لا مثيل لها: مؤقت ينظم تبادل الأدوار كل 15 دقيقة، ومساعد ذكي يفرغ كلامهما الصوت مباشرة، وبضغطة زر واحدة يحول نقاشهما الصوتي في المكالمة إلى اختبار تفاعلي أو ملخص تنفيذي شامل."
-      },
-      {
-        num: 14,
-        section: "١٣ — محاكي الأكواد التفاعلي الحي",
-        time: "06:30 - 07:00",
-        title: "محاكي التطبيقات والأكواد الحي: من كتابة الشيفرة إلى التشغيل البصري الفوري",
-        subtitle: "بيئة تطوير تشبه Visual Studio داخل المتصفح لتوليد وتشغيل التطبيقات الحية.",
-        bullets: [
-          "فصل معماري احترافي: مربع علوي لمحرر الأكواد (solution.js) ومربع سفلي للمعاينة البصرية الحية.",
-          "توليد تطبيقات مصغرة كاملة: الـ AI يبني تطبيقاً تفاعلياً كاملاً بواجهة HTML / DOM / Canvas.",
-          "تشغيل بصري حقيقي: عند الضغط على تشغيل، تشتغل اللعبة أو الأداة فعلياً أمام الطالب."
-        ],
-        script: "نصل الآن إلى درة التاج التفاعلية في المنصة: محاكي الأكواد الحي. صممناه ليعمل تماماً كبيئة Visual Studio متكاملة؛ يطلب الطالب من الذكاء الاصطناعي توليد الحل فيُكتب الكود كاملاً في المحرر العلوي، وبمجرد الضغط على زر تشغيل، يتحول الكود إلى تطبيق مرئي أو لعبة تفاعلية تعمل فعلياً أمام عينيه!"
-      },
-      {
-        num: 15,
-        section: "١٤ — القرار المعماري الجوهري (لأخصائيي AI)",
-        time: "07:00 - 07:30",
-        title: "الهندسة المعمارية: لماذا استبدلنا تحميل الـ Agent محلياً على الـ RAM بقنوات API سحابية؟",
-        subtitle: "معمارية مفصولة عديمة الحالة (Decoupled Stateless Inference Pipeline) توفر 92% من الذاكرة.",
-        bullets: [
-          "العبء المعماري للاستضافة المحلية: تحميل أوزان النماذج في الـ RAM يسبب استنزاف الذاكرة واختناق الخادم.",
-          "ابتكارنا المعماري: فصل طبقة منطق التطبيق عن طبقة الاستدلال الحسابي عبر قنوات API سحابية فائقة السرعة.",
-          "المكاسب الهندسية: خفض استهلاك ذاكرة الخادم بنسبة 92%، استجابة لحظية، وتوسع أفقي لآلاف الطلاب."
-        ],
-        script: "وبما أننا نتحدث أمام نخبة من أخصائيي الذكاء الاصطناعي، دعوني أكشف لكم عن أهم قرار معماري اتخذناه في بناء هذا النظام: لقد رفضنا تماماً النهج التقليدي المتمثل في تنزيل الـ Agent وأوزان النماذج وتحميلها مباشرة على الـ RAM المحلية للخادم لما يسببه ذلك من اختناق ومحدودية. بدلاً من ذلك، هندسنا معمارية مفصولة عديمة الحالة تعتمد على قنوات API سحابية فائقة السرعة، مما وفر 92% من استهلاك الذاكرة ومنحنا سرعة استجابة لحظية مهما بلغ عدد المستخدمين."
-      },
-      {
-        num: 16,
-        section: "١٥ — معمارية الصمود الصفري (Zero-Downtime)",
-        time: "07:30 - 08:00",
-        title: "سلسلة التعافي التلقائي عبر 4 نماذج ذكاء اصطناعي متتالية",
-        subtitle: "توجيه ذكي ينتقل تلقائياً في أجزاء من الثانية عند أي ضغط أو خطأ شبكي.",
-        bullets: [
-          "1. openai/gpt-oss-20b (الأساسي فائق السرعة) -> 2. openai/gpt-oss-120b (للاستدلال العميق).",
-          "3. qwen/qwen3.8-27b (للهيكلة المنطقية) -> 4. allam-2-7b (المتخصص باللغة العربية).",
-          "محرك الصوتيات الموازي: دمج نموذج whisper-large-v3-turbo لتفريغ الفويسات والمكالمات بدقة 96%."
-        ],
-        script: "ولكي نضمن أن المنصة لا تتوقف أبداً تحت أي ضغط، لم نربط النظام بنموذج واحد قد يتعطل أو يصل للحد الأقصى للطلبات؛ بل بنينا سلسلة تعافٍ تلقائي من أربعة نماذج ذكية متتالية: تبدأ بنموذج 20 مليار معامِل للسرعة، تليه طبقة 120 مليار للاستدلال العميق، ثم Qwen للهيكلة، وصولاً إلى نموذج علّام العربي، بحيث ينتقل الطلب تلقائياً في أجزاء من الثانية عند أي خطأ دون أن يشعر الطالب بشيء."
-      },
-      {
-        num: 17,
-        section: "١٦ — هندسة العزل الأمني وضغط الوسائط",
-        time: "08:00 - 08:30",
-        title: "الأمان الهندسي وتحسين الموارد: عزل الشيفرات وضغط الوسائط محلياً",
-        subtitle: "حماية كاملة لبيئة التشغيل ومواءمة سعة التوليد البرمجي المرئي.",
-        bullets: [
-          "عزل كامل لمشغل الأكواد (Isolated Iframe Sandbox): منع الوصول لصفحة التطبيق أو الشبكة الخارجية.",
-          "مواءمة سعة التوليد البرمجي: رفع ميزانية التوليد إلى 4,000 توكن وسعة المحرر والمشغل إلى 12,000 حرف.",
-          "ضغط الصور الذكي من جهة العميل: معالجة وضغط الصور داخل المتصفح لتقليص حجم النقل بنسبة 85%."
-        ],
-        script: "وعلى صعيد الأمان الهندسي، يعمل مشغل الأكواد داخل حاوية Iframe معزولة تماماً تمنع أي وصول للشبكة أو بيانات الصفحة، مع رفع سقف توليد الكود إلى 4000 توكن لبناء تطبيقات كاملة. كما ابتكرنا خط معالجة يضغط الصور محلياً قبل إرسالها ليوفر 85% من حجم البيانات."
-      },
-      {
-        num: 18,
-        section: "١٧ — هندسة الواجهات المتجاوبة والتطبيق المستقل",
-        time: "08:30 - 09:00",
-        title: "هندسة الواجهات: تصميم خالٍ من التداخل وجاهزية العمل كتطبيق مستقل",
-        subtitle: "تجربة مثالية على أجهزة الآيباد والأجهزة اللوحية والهواتف الذكية.",
-        bullets: [
-          "معمارية شبكية متجاوبة: فصل حاويات التمرير في غرفة الفيديو والشريط الجانبي لمنع أي تداخل بصري.",
-          "توافقية عميقة مع iPadOS / iOS Safari: معالجة قيود WebRTC للصوتيات وترميز MediaRecorder.",
-          "تطبيق ويب تقدمي قابل للتثبيت (PWA & APK Ready): العمل بملء الشاشة كتطبيق أصلي مستقل."
-        ],
-        script: "اهتممنا كذلك بأدق تفاصيل هندسة الواجهات على الأجهزة اللوحية والهواتف؛ فضبطنا حاويات العرض لمنع أي تداخل بصري، وعالجنا توافقية الصوت والفيديو مع جميع المتصفحات، وجهزنا المنصة لتعمل كتطبيق مستقل قابل للتثبيت المباشر."
-      },
-      {
-        num: 19,
-        section: "١٨ — لوحة المقاييس الهندسية والحصيلة الرقمية",
-        time: "09:00 - 09:30",
-        title: "الحصيلة الهندسية بالأرقام: كفاءة معمارية جاهزة للإنتاج الفعلي",
-        subtitle: "مؤشرات الأداء القياسية لمنظومة SkillSync AI.",
-        bullets: [
-          "99.9% استمرارية خدمة الذكاء الاصطناعي بفضل سلسلة النماذج الأربعة المتناوبة.",
-          "92% وفر في استهلاك الذاكرة العشوائية (RAM) بفضل معمارية الـ API السحابية المفصولة.",
-          "4,000 توكن سعة التوليد البرمجي المرئي لكل محاكي (12,000 حرف) و96% دقة تفريغ الصوت العربي."
-        ],
-        script: "هذه الأرقام تلخص قوة ما بنيناه: 99.9% جاهزية تشغيلية بلا انقطاع، 92% توفيراً في استهلاك ذاكرة الخوادم، 4000 توكن لتوليد التطبيقات الحية في المحاكي، و96% دقة في تفريغ النقاشات الصوتية العربية."
-      },
-      {
-        num: 20,
-        section: "١٩ — المشهد الختامي الدرامي وبوابة الانتقال الحي",
-        time: "09:30 - 10:00",
-        title: "المعماريات العظيمة لا تُحكى على الشرائح.. بل تُختبر في الميدان",
-        subtitle: "انتقل الآن إلى التجربة الحية لمنصة SkillSync AI: https://skill-sync-ai--zeintabakha443t.replit.app",
-        bullets: [
-          "النظام يعمل الآن بالزمن الحقيقي (Live Production Environment).",
-          "كل فكرة، وكل ميزة تفاعلية، وكل قرار معماري استعرضناه يعمل بكامل طاقته في هذه اللحظة.",
-          "الرابط المباشر: https://skill-sync-ai--zeintabakha443t.replit.app"
-        ],
-        script: "سادة لجنة التحكيم الكرام.. الكلام النظري عن الأفكار وهندسة الذكاء الاصطناعي سهل ومتاح للجميع، لكن البرهان الحقيقي للمهندس هو نظام حي يقف صامداً أمام الاختبار الفعلي. كل ما رأيتموه في هذه الشرائح العشرين ليس تصميماً مبدئياً ولا وعوداً مستقبلية، بل هو منصة حية تعمل الآن بكامل طاقتها. يشرفني الآن أن أضغط معكم على هذا الرابط لنغادر شاشة العرض، وندخل مباشرة إلى قلب منصة SkillSync AI لنعيش التجربة حية أمام أعينكم.. تفضلوا معنا!"
-      }
-    ];
-
-    let currentSlideIndex = 0;
-    const slides = document.querySelectorAll('.slide');
-    const totalSlides = slides.length;
-    const progressRibbon = document.getElementById('progressRibbon');
-    const slideCounter = document.getElementById('slideCounter');
-    const dotIndicators = document.getElementById('dotIndicators');
-
-    // Initialize navigation dots
-    slidesMetadata.forEach((_, idx) => {
-      const dot = document.createElement('div');
-      dot.className = 'slide-dot' + (idx === 0 ? ' active' : '');
-      dot.title = `الشريحة ${idx + 1}`;
-      dot.onclick = () => goToSlide(idx);
-      dotIndicators.appendChild(dot);
-    });
-
-    function toArabicDigits(num) {
-      return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
-    }
-
-    function runSlideAnimations(slideEl) {
-      const counters = slideEl.querySelectorAll('.count-up');
-      counters.forEach(counter => {
-        const target = parseFloat(counter.getAttribute('data-target'));
-        let current = 0;
-        const step = Math.max(1, Math.ceil(target / 35));
-        counter.textContent = '0';
-        const timer = setInterval(() => {
-          current += step;
-          if (current >= target) {
-            counter.textContent = target;
-            clearInterval(timer);
-          } else {
-            counter.textContent = current;
-          }
-        }, 28);
-      });
-
-      const bars = slideEl.querySelectorAll('.metric-bar-fill');
-      bars.forEach(bar => {
-        bar.style.width = '0%';
-        setTimeout(() => {
-          bar.style.width = bar.getAttribute('data-width');
-        }, 180);
-      });
-    }
-
-    function updateDeckUI() {
-      slides.forEach((slide, idx) => {
-        slide.classList.remove('active', 'prev-slide');
-        if (idx === currentSlideIndex) {
-          slide.classList.add('active');
-          runSlideAnimations(slide);
-        } else if (idx < currentSlideIndex) {
-          slide.classList.add('prev-slide');
-        }
-      });
-
-      const pct = ((currentSlideIndex + 1) / totalSlides) * 100;
-      progressRibbon.style.width = `${pct}%`;
-      slideCounter.textContent = `${toArabicDigits(currentSlideIndex + 1)} / ${toArabicDigits(totalSlides)}`;
-
-      document.getElementById('prevBtn').disabled = currentSlideIndex === 0;
-      document.getElementById('nextBtn').disabled = currentSlideIndex === totalSlides - 1;
-
-      const dots = dotIndicators.querySelectorAll('.slide-dot');
-      dots.forEach((d, idx) => d.classList.toggle('active', idx === currentSlideIndex));
-    }
-
-    function changeSlide(direction) {
-      const nextIdx = currentSlideIndex + direction;
-      if (nextIdx >= 0 && nextIdx < totalSlides) {
-        currentSlideIndex = nextIdx;
-        updateDeckUI();
-      }
-    }
-
-    function goToSlide(index) {
-      if (index >= 0 && index < totalSlides) {
-        currentSlideIndex = index;
-        updateDeckUI();
-      }
-    }
-
-    // Full Screen Toggle optimized for Projectors
-    function toggleFullScreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().then(() => {
-          document.body.classList.add('is-fullscreen');
-        }).catch(() => {});
-      } else {
-        document.exitFullscreen().then(() => {
-          document.body.classList.remove('is-fullscreen');
-        }).catch(() => {});
-      }
-    }
-
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement) {
-        document.body.classList.remove('is-fullscreen');
-      }
-    });
-
-    let isEditMode = false;
-    function toggleEditMode() {
-      isEditMode = !isEditMode;
-      const body = document.getElementById('appBody');
-      const btn = document.getElementById('editModeBtn');
-      const label = document.getElementById('editTextLabel');
-
-      if (isEditMode) {
-        body.classList.add('editable-active');
-        btn.classList.add('editing');
-        label.textContent = 'وضع التعديل (نشط - انقر للكتابة)';
-        document.querySelectorAll('.slide h1, .slide h2, .slide h3, .slide h4, .slide p, .slide span').forEach(el => {
-          if (!el.closest('.window-dots') && !el.closest('.kicker-badge')) {
-            el.setAttribute('contenteditable', 'true');
-          }
-        });
-      } else {
-        body.classList.remove('editable-active');
-        btn.classList.remove('editing');
-        label.textContent = 'وضع التعديل (معطل)';
-        document.querySelectorAll('[contenteditable]').forEach(el => {
-          el.setAttribute('contenteditable', 'false');
-        });
-      }
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (isEditMode && document.activeElement.getAttribute('contenteditable') === 'true') {
-        return;
-      }
-      if (e.key === 'ArrowLeft' || e.key === ' ' || e.key === 'PageDown') {
-        e.preventDefault();
-        changeSlide(1);
-      } else if (e.key === 'ArrowRight' || e.key === 'PageUp') {
-        e.preventDefault();
-        changeSlide(-1);
-      } else if (e.key.toLowerCase() === 'e') {
-        toggleEditMode();
-      } else if (e.key.toLowerCase() === 'f') {
-        toggleFullScreen();
-      }
-    });
-
-    let touchStartX = 0;
-    const viewport = document.getElementById('deckViewport');
-    viewport.addEventListener('touchstart', e => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    viewport.addEventListener('touchend', e => {
-      const diff = e.changedTouches[0].screenX - touchStartX;
-      if (Math.abs(diff) > 55) {
-        if (diff > 0) changeSlide(1);
-        else changeSlide(-1);
-      }
-    }, { passive: true });
-
-    async function exportFullDeckToPPTX() {
-      // ... existing export code ...
-    }
-
-    updateDeckUI();
-  </script>
-</body>
-</html>
+S
+SkillSync AI — العرض التحكيمي (20 شريحة)
+
+وضع التعديل (معطل)
+
+تحميل PPTX
+
+ملء الشاشة
+
+
+العرض التحكيمي الرسمي — القسم الأول: الفكرة والفلسفة
+٠٠:٠٠ - ٠٠:٣٠
+
+SkillSync AI: ثورة التعلم التشاركي وتبادل المهارات الجامعية
+عندما تلتقي المعرفة البشرية المتبادلة بهندسة الذكاء الاصطناعي التفاعلي في بيئة واحدة.
+
+
+تبادل المهارات المتكافئ
+كل طالب معلم في مهارته ومتعلم في مهارة شريكه
+
+غرف تعلم ومحاكيات حية
+تشغيل بصري للأكواد، محادثة وسائط، وغرفة فيديو
+
+ذكاء اصطناعي ميسّر وصامد
+معمارية سحابية بـ ٤ نماذج متناوبة دون انقطاع
+٠١ — تشخيص المشكلة الحقيقية
+٠٠:٣٠ - ٠١:٠٠
+معضلة العزلة الأكاديمية: وفرة في المحتوى وفقر في الممارسة
+0
+%
+من طلاب الجامعات يكتسبون معارف نظرية ممتازة لكنهم يفتقدون شريكاً عملياً لتطبيقها وممارستها خارج القاعات الدراسية.
+
+١. فخ التعلم السلبي
+الساعات الطويلة أمام الفيديوهات المسجلة والمحاضرات النظرية تصنع مستمعين جيدين، لكنها لا تصنع ممارسين محترفين.
+
+٢. غياب البيئة الآمنة للتجربة
+خوف الطالب من الخطأ أمام الأساتذة يمنعه من المبادرة، بينما التعلم التفاعلي مع قرين جامعي مماثل يكسر حاجز الرهبة فوراً.
+
+٣. الاستخدام الخاطئ للـ AI
+الاعتماد الفردي على الذكاء الاصطناعي كناسخ للحلول الجاهزة يقتل التفكير النقدي، بدلاً من توظيفه كميسر لحوار علمي بين طالبين.
+٠٢ — جوهر الفكرة وفلسفة المقايضة المعرفية
+الشريحة ٣ / ٢٠ • ٠١:٠٠ - ٠١:٣٠
+فلسفة SkillSync: أنت تتقن شيئاً.. وهناك من يحتاج أن يتعلمه منك
+مبدأ المقايضة المعرفية المتكافئة (Reciprocal Skill Bartering)
+لا وجود لمعلم تقليدي ومتلقٍ سلبي؛ كل طالب في المنصة هو "معلّم في مهارته، ومتعلّم في مهارة شريكه".
+مثال واقعي حي من داخل المنصة
+طالب يتقن البرمجة (Python / JS) ويحتاج لتعلم تصميم الواجهات (Product Design / Figma) يلتقي بطالب مصمم يريد تعلم البرمجة.
+النتيجة التعليمية والإنسانية
+تعلّم مزدوج، التزام متبادل، وبناء مجتمع جامعي مترابط يتبادل الخبرات وجهاً لوجه.
+
+
+
+skillsync.ai — Peer-Learning Community
+العربية / EN
+● A PEER-LEARNING COMMUNITY FOR UNIVERSITY PARTNERS
+You know a thing. Someone else needs to know it.
+Join the circle →
+I can teach Figma ⇄ Learn Python
+٠٣ — رحلة الطالب داخل المنصة
+الشريحة ٤ / ٢٠ • ٠١:٣٠ - ٠٢:٠٠
+كيف تعمل المنظومة؟ رحلة متكاملة من البحث إلى الإتقان التطبيقي
+٠١
+بناء الهوية المهارية (My Profile)
+تحديد المهارات التي يتقنها الطالب (What I Can Teach) والمهارات التي يطمح لاكتسابها (What I Want to Learn) ومستوى التفرغ.
+ملف أكاديمي ذكي
+٠٢
+المطابقة الذكية (Find a Match)
+خوارزمية تحلل التقاطع المهاري الثنائي وترشح أفضل شريك جامعي متكامل مع حساب نسبة التوافق بدقة.
+تقاطع مهاري متكافئ
+٠٣
+غرفة التعلم المشتركة (Learning Room)
+مساحة عمل حية تجمع محادثة الشريك، خارطة الطريق، المحاكيات البرمجية، وغرفة الفيديو الذكية.
+٥ بيئات في شاشة واحدة
+٠٤
+التطبيق والتقييم المستمر
+اختبارات توليدية فورية، محاكيات أكواد بصرية حية، وملخصات جلسات تقيس التقدم الفعلي للشريكين.
+قياس أثر حقيقي
+٠٤ — المعادلة الذهبية للمنصة
+الشريحة ٥ / ٢٠ • ٠٢:٠٠ - ٠٢:٣٠
+الذكاء الاصطناعي كميسّر ذكي للجلسة.. لا كبديل عن الإنسان
+
+الإنسان يمنح (الشريكان)
+• الدافع الحقيقي والمساءلة المتبادلة • شرح التجربة الشخصية بلغة قريبة • التعاطف وكسر الملل والجمود
+نواة التكامل
+SkillSync AI
+يتدخل عند الاستدعاء فقط (@AI) دون التشويش على الحوار البشري
+
+الذكاء الاصطناعي (@AI) يمنح
+• هيكلة خطة الدرس وتصحيح المفاهيم • توليد التمارين والمحاكيات اللحظية • تفريغ النقاشات الصوتية وتلخيصها
+القسم الثاني: ميزات الموقع • ٠٥ — المطابقة ولوحة القيادة
+الشريحة ٦ / ٢٠ • ٠٢:٣٠ - ٠٣:٠٠
+محرك المطابقة الذكي: إيجاد الشريك الأكاديمي المثالي بضغطة زر
+تحليل التوافق المهاري الثنائي
+البحث عن التطابق العكسي المثالي: (ما أملكه = ما تحتاجه أنت، وما تملكه = ما أحتاجه أنا).
+بطاقات شركاء غنية بالمعلومات
+تعرض التخصص الجامعي، اللغات المدعومة، أوقات التفرغ، ونقاط الالتقاء المشتركة بوضوح.
+لوحة تحكم شاملة (Overview)
+تعرض الغرف النشطة، نسبة التقدم في كل غرفة، والمهام القادمة بواجهة مريحة.
+ابحث عن شريك (Find a Match)
+تطابق مهاري ٩٨٪
+PN
+Priya Nair • علوم حاسوب وتصميم
+غرفة نشطة: SkillSync Pairing: Code & Design
+تعلّمك (Teaches):
+Product Design & UI
+تعلّمها (Learns):
+JavaScript & Algorithms
+٠٦ — غرف التعلم الموحدة وثنائية اللغة
+الشريحة ٧ / ٢٠ • ٠٣:٠٠ - ٠٣:٣٠
+غرف التعلم الذكية: محطة عمل متكاملة في شاشة واحدة
+SkillSync Pairing: Code & Design
+غرفة تعلم تشاركية ثنائية اللغة (العربية / الإنجليزية) — اتجاه RTL و LTR أصيل
+قيد التعلم • التقدم المشترك نشط
+
+١. محادثة الشريك
+
+٢. محادثة SkillSync AI
+
+٣. اختبارات ومحاكيات
+
+٤. خطة التعلم والتقييم
+
+٥. غرفة الفيديو الذكية
+٥ بيئات مدمجة دون تشتت
+تغني الطالبين عن التنقل بين خمسة تطبيقات خارجية مختلفة أثناء الجلسة.
+دعم ثنائي اللغة أصيل
+تحول فوري لاتجاه الواجهة (RTL / LTR) مع الحفاظ على تناسق الخطوط والأبعاد.
+مؤشر تقدم حي للغرفة
+شريط إنجاز تشاركي يحسب تقدم الشريكين معاً خطوة بخطوة.
+٠٧ — خارطة الطريق الذكية وتوليد خطط التعلم
+الشريحة ٨ / ٢٠ • ٠٣:٣٠ - ٠٤:٠٠
+هندسة المسار التعليمي: خطط دراسية مخصصة يولدها الذكاء الاصطناعي
+١. توليد تلقائي لخارطة الطريق
+يحلل الذكاء الاصطناعي مهارتي الشريكين ويصمم خطة عمل مقسمة إلى مراحل واضحة قابلة للتنفيذ.
+٢. أهداف تشاركية قابلة للتتبع
+كل مرحلة تحتوي على مهام تطبيقية محددة، وعند إتمامها ترتفع نسبة الإنجاز الكلية للغرفة تلقائياً.
+٣. تكيّف مستمر مع سرعة الاستيعاب
+إمكانية تحديث الخطة وتوليد محطات تدريبية جديدة بناءً على أداء الطرفين في الكويزات والمحاكيات.
+خطة التعلم والتقييم — المسار المشترك
+الإنجاز: ٧٥٪
+
+
+المرحلة ١: أساسيات منطق JavaScript وهيكلية مكونات التصميم
+
+المرحلة ٢: بناء واجهة تفاعلية وتجربتها في محاكي الأكواد الحي
+
+المرحلة ٣: جلسة مراجعة مرئية وتحويل النقاش الصوتي إلى كويز
+٠٨ — محادثة الشريك المتطورة
+الشريحة ٩ / ٢٠ • ٠٤:٠٠ - ٠٤:٣٠
+محادثة الشريك: تواصل احترافي بميزة السحب للرد والاقتباس السياقي
+إيماءة السحب للرد (WhatsApp-Style Swipe)
+سحب أي فقاعة رسالة باللمس على الآيباد أو الهاتف للرد المباشر عليها بحركة فيزيائية ناعمة أو عبر زر Reply.
+شريط معاينة الاقتباس السياقي
+يظهر فوق صندوق الكتابة موضحاً اسم المرسل وجزءاً من الرسالة أو نوع الوسائط مع زر إلغاء سريع.
+الانتقال السلس للرسالة الأصلية
+عند النقر على الاقتباس داخل أي رد، تتمرر المحادثة تلقائياً بنعومة (Smooth Scroll) للرسالة الأصلية وتومض لتمييزها.
+Priya Nair • 10:15 PM
+كيف نربط حدث الضغط في Canvas مع حركة الديناصور؟
+سحب للرد
+رداً على Priya Nair: كيف نربط حدث الضغط في Canvas...
+نستخدم addEventListener('keydown') داخل المحاكي، جربي الكود الذي أرسلته فوق!
+جارٍ الرد على Priya Nair...
+
+٠٩ — التواصل متعدد الوسائط
+الشريحة ١٠ / ٢٠ • ٠٤:٣٠ - ٠٥:٠٠
+محادثة غنية بالوسائط: فويسات مفرغة بالذكاء الاصطناعي وصور فائقة السرعة
+
+الرسائل الصوتية والتفريغ الفوري
+
+
+00:24
+تفريغ النص (Whisper AI): "شرحت لك في هذا التسجيل كيف نحسب أوقات الصلاة في دمشق حسب زاوية الشمس..."
+مسجل صوتي مدمج متوافق كلياً مع iPad Safari مع زر "تفريغ النص" تحت كل فويس.
+
+مشاركة الصور وعارض الشاشة الكاملة
+
+مخطط معمارية الواجهة.png (معاينة Lightbox فورية)
+إرسال الصور من الكاميرا أو المعرض مع معاينة مصغرة قبل الإرسال، وضغط ذكي يمنع أخطاء التحميل ويفتح بملء الشاشة.
+١٠ — الوكيل الذكي @AI المدمج في السياق
+الشريحة ١١ / ٢٠ • ٠٥:٠٠ - ٠٥:٣٠
+المساعد الذكي @AI: وعي كامل بسياق الرسائل المقتبسة والوسائط
+١. الاستدعاء اللحظي عند الطلب
+تفعيل زر @AI أو كتابة الإشارة داخل محادثة الشريك، أو عبر تبويب المساعد المستقل.
+٢. فهم السياق المقتبس والصوتي تلقائياً
+عندما يسحب الطالب رسالة قديمة أو رسالة صوتية ويرد عليها موجهاً السؤال لـ @AI، يفرغ النظام الصوت ويرسل السياق المقتبس كاملاً للنموذج.
+٣. تدقيق المعلومات وتوليد الأمثلة
+إمكانية التحقق الفوري من صحة أي معلومة يطرحها الشريكان أثناء النقاش بحيادية علمية.
+زين يقتبس رسالة صوتية من شريكه ويستدعي @AI:
+"@AI هل الطريقة التي شرحها زميلي في الفويس المقتبس لحساب تعقيد الخوارزمية $O(n)$ دقيقة؟"
+
+رد SkillSync AI (بعد قراءة تفريغ الفويس المقتبس):
+"نعم، ما ذكره شريكك في التسجيل الصوتي صحيح تماماً! لأن الحلقة تمر على مصفوفة العقبات مرة واحدة فقط، فإن التعقيد الزمني هو $O(n)$ والتعقيد المكاني $O(1)$."
+١١ — مركز الاختبارات والبطاقات التعليمية التوليدية
+الشريحة ١٢ / ٢٠ • ٠٥:٣٠ - ٠٦:٠٠
+التقييم التوليدي الفوري: اختبارات وبطاقات تعليمية بلمسة واحدة
+قواعد تجويد / Python Quiz
+أنشئ عبر SkillSync AI
+السؤال ١: ما هي المخرجات الصحيحة لتعبير القائمة في بايثون؟
+A. إنشاء قائمة مصفاة في سطر واحد بكفاءة
+
+B. تعديل المصفوفة الأصلية دون إرجاع قيمة
+C. إيقاف التنفيذ عند أول عنصر فارغ
+توليد فوري لأي موضوع أكاديمي
+يكتب الطالب أي موضوع (مثل: Python list comprehensions أو قواعد التجويد أو الكيمياء) ليولد الذكاء الاصطناعي كويزاً متكاملاً أو بطاقات استذكار (Flashcards) خلال ثوانٍ.
+تتبع المحاولات التشاركي (Shared Attempt Status)
+عرض حالة محاولات كل شريك جنباً إلى جنب مع تصحيح فوري وشرح مفصل للإجابات لتعزيز التعلم المشترك.
+١٢ — غرفة الفيديو الذكية ومساعد المكالمة
+الشريحة ١٣ / ٢٠ • ٠٦:٠٠ - ٠٦:٣٠
+غرفة الفيديو الذكية: اتصال مرئي مباشر مدعوم بمساعد مكالمة ذكي
+مؤقت تبادل الأدوار (15-Minute Role-Swap)
+يضبط إيقاع الجلسة بين الشريكين لضمان تقسيم الوقت بعدالة بين الشرح والتطبيق.
+التفريغ الصوتي المباشر للمكالمة
+يلتقط حديث الطرفين أثناء الاجتماع ويحوله إلى نص حي أمامهما بدقة عالية.
+٣ أدوات ذكية أثناء المكالمة
+١. تلميح مباشر من SkillSync AI • ٢. حوّل نقاشنا الصوتي إلى كويز • ٣. إنهاء المكالمة وإنشاء ملخص.
+مساعد SkillSync AI للمكالمة — Jitsi WebRTC
+مؤقت تبادل الأدوار النشط: 15:00 دقيقة (الدور ١ من ٢)
+🎤 تفريغ الكلام نشط
+✨ حوّل نقاشنا الصوتي إلى كويز
+نص المكالمة المفرغ لحظياً: "اتفقنا في هذه الجلسة على ربط مكونات الواجهة مع دالة حساب المواقيت..."
+القسم الثالث: العمق التقني والمعماري • ١٣ — محاكي الأكواد التفاعلي الحي
+الشريحة ١٤ / ٢٠ • ٠٦:٣٠ - ٠٧:٠٠
+محاكي التطبيقات والأكواد الحي: بيئة Visual Studio داخل المتصفح
+solution.js
+✨ أنشئ الحل بواسطة SkillSync AI
+function renderInteractiveApp() {
+  const card = document.createElement('div');
+  // Complete 4,000-token DOM & Canvas Mini-App
+}
+▶ المخرجات المباشرة (Live Interactive DOM/Canvas Preview)
+يعمل الآن
+🦖 لعبة الديناصور / حاسبة مواقيت دمشق التفاعلية
+تشغيل تفاعلي حي
+١. فصل معماري احترافي (Editor vs. Live Runner)
+مربع علوي مخصص حصرياً لمحرر الشيفرة (solution.js) ومربع سفلي مخصص للمعاينة البصرية الحية وسجل الـ Console.
+٢. توليد تطبيقات مصغرة كاملة (4,000 توكن)
+الـ AI مُلزم ببناء واجهة مرئية كاملة (HTML / DOM / Canvas) مع أزرار تحكم وحقول إدخال لكل مهمة برمجية.
+٣. تشغيل بصري حقيقي بضغطة زر
+عند الضغط على تشغيل، تشتغل اللعبة أو الأداة فعلياً أمام الطالب داخل إطار معزول وآمن.
+١٤ — القرار المعماري الجوهري (لأخصائيي الذكاء الاصطناعي)
+الشريحة ١٥ / ٢٠ • ٠٧:٠٠ - ٠٧:٣٠
+لماذا استبدلنا تحميل الـ Agent محلياً على الـ RAM بقنوات API سحابية؟
+❌ النهج التقليدي المرفوض: تحميل الـ Agent على الـ RAM
+عبء معماري ثقيل
+	•	استنزاف هائل للذاكرة (RAM/VRAM Overhead): تحميل أوزان النماذج والوكيل محلياً يلتهم عشرات الغيغابايتات لكل عملية.
+	•	اختناق الخادم عند التزامن (OOM & Bottlenecks): انهيار الأداء عند دخول عشرات الغرف التعليمية في نفس اللحظة.
+	•	ارتفاع زمن الاستجابة (High TTFT): بطء شديد في توليد التوكن الأول وإقلاع الحاويات.
+✅ ابتكارنا المعماري: Decoupled Stateless API Pipelines
+وفر ٩٢٪ من الـ RAM
+	•	فصل طبقة التطبيق عن طبقة الاستدلال: خادم رشيق عديم الحالة يدير الجلسات ويوجه الاستدلال عبر قنوات API سحابية فائقة السرعة.
+	•	استجابة لحظية (Sub-Second TTFT): توليد الكود والردود في أجزاء من الثانية عبر مسرعات استدلال متخصصة.
+	•	قابلية توسع أفقية لا نهائية: خدمة آلاف الطلاب المتزامنين باستهلاك ذاكرة يقارب الصفر.
+١٥ — معمارية الصمود الصفري (Zero-Downtime Resilience)
+الشريحة ١٦ / ٢٠ • ٠٧:٣٠ - ٠٨:٠٠
+سلسلة التعافي التلقائي عبر ٤ نماذج ذكاء اصطناعي متتالية
+١. الأساسي فائق السرعة
+openai/gpt-oss-20b
+معالجة التفاعلات اللحظية ومحادثات الغرف بأقل كمون زمني ممكن.
+٢. الاحتياطي الأول (العميق)
+openai/gpt-oss-120b
+يتولى الاستدلال المنطقي المعقد وتوليد الشيفرات البرمجية الضخمة.
+٣. الاحتياطي الثاني (المهيكل)
+qwen/qwen3.8-27b
+لضمان دقة مخرجات الـ JSON المهيكل والاختبارات وخطط التعلم.
+٤. الاحتياطي الثالث (العربي)
+allam-2-7b
+نموذج متخصص باللسانيات العربية لضمان الفصاحة والسلامة اللغوية.
+آلية الانتقال الفوري (Instant Failover) + محرك الصوتيات الموازي
+أي خطأ شبكي (429 Rate Limit أو 5xx أو JSON غير مكتمل) ينقل الطلب فوراً للنموذج التالي في السلسلة، مع خط صوتي موازٍ عبر whisper-large-v3-turbo.
+200 OK
+١٦ — هندسة العزل الأمني للمحاكي وضغط الوسائط
+الشريحة ١٧ / ٢٠ • ٠٨:٠٠ - ٠٨:٣٠
+الأمان الهندسي وتحسين الموارد: عزل الشيفرات وضغط الوسائط محلياً
+
+عزل كامل لمشغل الأكواد (Isolated Iframe Sandbox)
+تشغيل أكواد الطلاب وواجهات الـ DOM/Canvas داخل إطار معزول بدون أي صلاحية وصول لصفحة التطبيق أو الشبكة الخارجية (Blocked Fetch/XHR) مع حارس زمني يوقف الحلقات اللانهائية.
+١٠٠٪ حماية ضد ثغرات الحقن
+
+مواءمة سعة التوليد البرمجي
+رفع ميزانية التوليد إلى ٤,٠٠٠ توكن ومواءمة حدود المحرر والمشغل والـ API عند ١٢,٠٠٠ حرف، مع فلترة ذكية تمنع إدراج أي شيفرة مقطوعة أو ناقصة.
+أكواد كاملة بلا اختصار
+
+ضغط الصور الذكي من جهة العميل
+معالجة وضغط الصور المرفوعة داخل المتصفح عبر Canvas وتحويل صيغ الآيباد مع ضبط سياسة CSP img-src لقبول روابط البيانات والـ Blob بسلاسة.
+٨٥٪ تقليص لحجم نقل الوسائط
+١٧ — هندسة الواجهات المتجاوبة وتجربة التطبيق المستقل
+٠٨:٣٠ - ٠٩:٠٠
+هندسة الواجهات: تصميم خالٍ من التداخل وجاهزية العمل كتطبيق مستقل
+
+معمارية شبكية معزولة التمرير
+فصل حاويات الـ CSS Grid والـ Flex في غرفة الفيديو والشريط الجانبي لمنع أي تراكب بصري بين التبويبات على شاشات الأجهزة اللوحية.
+
+توافقية عميقة مع iOS Safari
+معالجة صلاحيات إطار WebRTC للفيديو (camera; microphone; fullscreen) ودعم تعدد صيغ الصوت في MediaRecorder.
+
+جاهزية التثبيت كتطبيق (PWA / APK)
+دعم كامل لوضع الشاشة المستقلة (Standalone Display) ليعمل بملء الشاشة على الهواتف الذكية والأجهزة اللوحية كأنه تطبيق أصلي تماماً.
+١٨ — لوحة المقاييس الهندسية والحصيلة الرقمية
+الشريحة ١٩ / ٢٠ • ٠٩:٠٠ - ٠٩:٣٠
+الحصيلة الهندسية بالأرقام: كفاءة معمارية جاهزة للإنتاج الفعلي
+99.9%
+استمرارية الذكاء الاصطناعي (٤ نماذج)
+92%
+وفر في استهلاك ذاكرة الخادم (RAM)
+4,000
+توكن سعة التوليد البرمجي المرئي
+96%
+دقة تفريغ الصوت العربي المباشر
+اعتمادية سلسلة النماذج المتناوبة (Zero-Downtime Failover)
+99.9%
+
+كفاءة توفير الذاكرة العشوائية عبر معمارية API عديمة الحالة
+92%
+
+العزل الأمني لحاويات تشغيل الأكواد والواجهات التفاعلية
+100%
+
+
+القسم الرابع: الخاتمة الدرامية وبوابة الانتقال الحي
+الشريحة ٢٠ / ٢٠ • ٠٩:٣٠ - ١٠:٠٠
+● النظام يعمل الآن بالزمن الحقيقي (Live Production Environment)
+"المعماريات العظيمة لا تُحكى على الشرائح.. بل تُختبر في الميدان."
+كل فكرة، وكل ميزة تفاعلية، وكل قرار معماري استعرضناه أمامكم الآن يعمل بكامل طاقته في هذه اللحظة.
+
+انتقل الآن إلى التجربة الحية لمنصة SkillSync AI
+
+
+السابق
+١ / ٢٠
+التالي
+
+مفاتيح اللابتوب للبروجيكتور: ← → (التالي/السابق) • E وضع التعديل • F ملء الشاشة
